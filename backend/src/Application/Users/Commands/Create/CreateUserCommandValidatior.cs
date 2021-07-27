@@ -7,8 +7,8 @@ namespace Application.Users.Commands.Create
     {
         public CreateUserCommandValidatior()
         {
-            RuleFor(_ => _.Entity).NotNull();
-            RuleFor(_ => _.Entity).SetValidator(new UserDtoValidator());
+            RuleFor(_ => _.User).NotNull();
+            RuleFor(_ => _.User).SetValidator(new UserDtoValidator());
         }
     }
 }
