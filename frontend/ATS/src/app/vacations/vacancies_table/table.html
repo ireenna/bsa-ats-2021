@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href='https://fonts.googleapis.com/css?family=Nunito' rel='stylesheet'>
+        
+        
+        <title>Vacancies</title>
+
+        <link rel="stylesheet" href="css/style.css" />
+
+        <link rel="stylesheet" href="css/table.css" />
+
+        <script src="https://kit.fontawesome.com/790e0610ba.js" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div class="wrapper">
+
+
+            <div class="header_for_table">
+                <div class="d-flex f-row f-align-center">
+                    <div class="header_element">
+                        <span>All</span>
+                    </div>
+
+                    <div class="header_element">
+                        <span>Followed</span>
+                    </div>
+
+                    <!--search container-->
+                    <div class="header_element">      
+                                
+                        <div class="input_search"><i class="fas fa-search"></i>  <input type="text" placeholder="Search"></div>
+                    </div>
+                </div>
+                
+                <!--button-->
+                <button>+<span id="content-desktop">New vacancy</span></button>
+
+            </div>
+
+            
+                      
+            <!--main table-->
+            <div id="content-1">        
+                        
+                    <div class="table-concept">
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    
+                                    <th>#</th>
+                                    <th onclick="sortTable()">Title</th>
+                                    <th onclick="sortTable()">Candidates</th>
+                                    <th onclick="sortTable()">Department</th>
+                                    <th onclick="sortTable()">Responsible</th>
+                                    <th onclick="sortTable()">Created</th>
+                                    <th onclick="sortTable()">Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                        
+                                    <td>1</td>
+                                    <td>Interface Designer</td>
+                                    <td>130 / <span style="color: #EE2A64;">60</span></td>
+                                    <td>Lorem ipsum dolor sit</td>
+                                    <td>Livia Baptista</td>
+                                    <td>16.06.2021</td>
+                                    <td>Invited</td>
+                                    <td>
+                                        <div class="vacancy_ico"><i class="far fa-bookmark"></i></div>
+                                        <div class="vacancy_ico"><i class="fas fa-pencil-alt"></i></div>
+                                        <div class="vacancy_ico"><img src=".\img\three-dots.png" style="height: 10px;"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                        
+                                    <td>2</td>
+                                    <td>Sofrware Engineer</td>
+                                    <td>34 / <span style="color: #EE2A64;">30</span></td>
+                                    <td>Lorem ipsum dolor sit</td>
+                                    <td>Emery Culham</td>
+                                    <td>16.06.2021</td>
+                                    <td>Invited</td>
+                                    <td>
+                                        <div class="vacancy_ico"><i class="far fa-bookmark"></i></div>
+                                        <div class="vacancy_ico"><i class="fas fa-pencil-alt"></i></div>
+                                        <div class="vacancy_ico"><img src=".\img\three-dots.png" style="height: 10px;"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                        
+                                    <td>3</td>
+                                    <td>Project Manager</td>
+                                    <td>56 / <span style="color: #EE2A64;">6</span></td>
+                                    <td>Lorem ipsum dolor sit</td>
+                                    <td>Livia Baptista</td>
+                                    <td>16.06.2021</td>
+                                    <td>Invited</td>
+                                    <td>
+                                        <div class="vacancy_ico"><i class="far fa-bookmark"></i></div>
+                                        <div class="vacancy_ico"><i class="fas fa-pencil-alt"></i></div>
+                                        <div class="vacancy_ico"><img src=".\img\three-dots.png" style="height: 10px;"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                        
+                                    <td>4</td>
+                                    <td>Interface Designer</td>
+                                    <td>130 / <span style="color: #EE2A64;">60</span></td>
+                                    <td>Lorem ipsum dolor sit</td>
+                                    <td>Livia Baptista</td>
+                                    <td>16.06.2021</td>
+                                    <td>Invited</td>
+                                    <td>
+                                        <div class="vacancy_ico"><i class="far fa-bookmark"></i></div>
+                                        <div class="vacancy_ico"><i class="fas fa-pencil-alt"></i></div>
+                                        <div class="vacancy_ico"><img src=".\img\three-dots.png" style="height: 10px;"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                        
+                                    <td>5</td>
+                                    <td>Sofrware Engineer</td>
+                                    <td>34 / <span style="color: #EE2A64;">30</span></td>
+                                    <td>Lorem ipsum dolor sit</td>
+                                    <td>Emery Culham</td>
+                                    <td>16.06.2021</td>
+                                    <td>Active</td>
+                                    <td>
+                                        <div class="vacancy_ico"><i class="far fa-bookmark"></i></div>
+                                        <div class="vacancy_ico"><i class="fas fa-pencil-alt"></i></div>
+                                        <div class="vacancy_ico"><img src=".\img\three-dots.png" style="height: 10px;"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                        
+                                    <td>6</td>
+                                    <td>Project Manager</td>
+                                    <td>56 / <span style="color: #EE2A64;">6</span></td>
+                                    <td>Lorem ipsum dolor sit</td>
+                                    <td>Livia Baptista</td>
+                                    <td>16.06.2021</td>
+                                    <td>Invited</td>
+                                    <td>
+                                        <div class="vacancy_ico"><i class="far fa-bookmark"></i></div>
+                                        <div class="vacancy_ico"><i class="fas fa-pencil-alt"></i></div>
+                                        <div class="vacancy_ico"><img src=".\img\three-dots.png" style="height: 10px;"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                        
+                                    <td>7</td>
+                                    <td>Interface Designer</td>
+                                    <td>130 / <span style="color: #EE2A64;">60</span></td>
+                                    <td>Lorem ipsum dolor sit</td>
+                                    <td>Livia Baptista</td>
+                                    <td>16.06.2021</td>
+                                    <td>Former</td>
+                                    <td>
+                                        <div class="vacancy_ico"><i class="far fa-bookmark"></i></div>
+                                        <div class="vacancy_ico"><i class="fas fa-pencil-alt"></i></div>
+                                        <div class="vacancy_ico"><img src=".\img\three-dots.png" style="height: 10px;"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                        
+                                    <td>8</td>
+                                    <td>Interface Designer</td>
+                                    <td>130 / <span style="color: #EE2A64;">60</span></td>
+                                    <td>Lorem ipsum dolor sit</td>
+                                    <td>Livia Baptista</td>
+                                    <td>16.06.2021</td>
+                                    <td>Former</td>
+                                    <td>
+                                        <div class="vacancy_ico"><i class="far fa-bookmark"></i></div>
+                                        <div class="vacancy_ico"><i class="fas fa-pencil-alt"></i></div>
+                                        <div class="vacancy_ico"><img src=".\img\three-dots.png" style="height: 10px;"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                        
+                                    <td>9</td>
+                                    <td>Sofrware Engineer</td>
+                                    <td>34 / <span style="color: #EE2A64;">30</span></td>
+                                    <td>Lorem ipsum dolor sit</td>
+                                    <td>Emery Culham</td>
+                                    <td>16.06.2021</td>
+                                    <td>Active</td>
+                                    <td>
+                                        <div class="vacancy_ico"><i class="far fa-bookmark"></i></div>
+                                        <div class="vacancy_ico"><i class="fas fa-pencil-alt"></i></div>
+                                        <div class="vacancy_ico"><img src=".\img\three-dots.png" style="height: 10px;"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                        
+                                    <td>10</td>
+                                    <td>Project Manager</td>
+                                    <td>56 / <span style="color: #EE2A64;">6</span></td>
+                                    <td>Lorem ipsum dolor sit</td>
+                                    <td>Livia Baptista</td>
+                                    <td>16.06.2021</td>
+                                    <td>Vacation</td>
+                                    <td>
+                                        <div class="vacancy_ico"><i class="far fa-bookmark"></i></div>
+                                        <div class="vacancy_ico"><i class="fas fa-pencil-alt"></i></div>
+                                        <div class="vacancy_ico"><img src=".\img\three-dots.png" style="height: 10px;"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    
+                    </div>
+            </div>
+
+
+            <div id="content-2"></div>
+                
+ 
+
+        </div>
+
+
+
+    </body>
+</html>

@@ -1,0 +1,153 @@
+body {
+    font-family: 'Nunito';font-size: 22px;
+}
+.wrapper{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    left: 14%;
+    top: 0px;
+
+    background: #F6F7F9;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.f-row {
+    flex-direction: row;
+}
+
+.f-align-center {
+    align-items: center;
+}
+
+
+.search{  
+    position: relative; 
+    margin-left: 20%;
+    top: 0%;
+    z-index: 1; 
+}
+
+.input_search {
+    background-color: #ffffff;
+    padding-right: 20px;
+    padding-left: 20px;
+    height: 35px;
+    border-radius: 70px;
+    font-size: 16px;
+    color: #1D1D1D;
+    opacity: 0.4;
+}
+
+.input_search input {
+    margin-left: 5px;
+    border: none
+}
+
+
+
+button {
+    height: 35px;
+	background-color: #EE2A64;
+    border: none;
+    border-radius: 70px;
+
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+
+	font-size:16px;
+    padding-right: 31px;
+    padding-left: 31px;
+
+}
+button:hover {
+	background-color:#ee2a6581;
+}
+button:active {
+	position:relative;
+	top:5px;
+}
+button #content-desktop {
+    margin-left: 5px;
+}
+
+
+
+.table-concept {
+    height: 100%;
+    overflow: auto;
+    position: relative;
+    font-size: 14px;
+    line-height: 1.5;
+
+}
+tr:nth-child(even) {
+    background-color: #F0F3F9;
+}
+tr:nth-child(odd) {
+    background-color: #FFFFFF;
+}
+
+
+.table-concept table {
+    table-layout: fixed;
+    width: 100%;
+}
+.table-concept th {
+    background: #FFFFFF;
+    color: #7F7F7F;
+
+}
+.table-concept th:hover {
+    color: #000;
+}
+.table-concept th:hover::after {
+    color: inherit;
+    font-size: 1.2em;
+    content: ' \025B8';
+}
+.table-concept th::after {
+    font-size: 1.2em;
+    color: transparent;
+    content: ' \025B8';
+}
+
+
+
+.header_for_table{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.header_element {
+    margin-right: 30px;
+}
+
+.header_element:last-child {
+    margin-left: 30px;
+}
+
+
+
+
+
+.vacancy_ico{
+    width: 22px;
+    height: 20px;
+    color: #000000;
+    opacity: 0.5;
+    display: inline;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+@media screen and (max-width: 768px) {
+
+#content-desktop {display: none;}
+
+
+}
