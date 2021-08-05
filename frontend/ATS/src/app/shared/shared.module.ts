@@ -45,10 +45,11 @@ import {MatDialogModule} from '@angular/material/dialog';
     MatSelectModule,
     MultiselectComponent,
     MatDialogModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   imports:[
     MatButtonModule, 
-    MatFormFieldModule,
     MatInputModule,
     MatToolbarModule,
     MatIconModule,
@@ -66,6 +67,7 @@ import {MatDialogModule} from '@angular/material/dialog';
     BrowserModule, 
     MatSelectModule,
     MatDialogModule,
+    ReactiveFormsModule,
   ],
   providers:[HttpClientService],
   declarations: 
