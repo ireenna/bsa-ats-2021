@@ -20,7 +20,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatListModule} from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
 import { MultiselectComponent } from './components/multiselect/multiselect.component';
-
+import {MatDialogModule} from '@angular/material/dialog';
 
 
 @NgModule({
@@ -44,6 +44,7 @@ import { MultiselectComponent } from './components/multiselect/multiselect.compo
     MatListModule,
     MatSelectModule,
     MultiselectComponent,
+    MatDialogModule,
   ],
   imports:[
     MatButtonModule, 
@@ -64,6 +65,7 @@ import { MultiselectComponent } from './components/multiselect/multiselect.compo
     BrowserAnimationsModule,
     BrowserModule, 
     MatSelectModule,
+    MatDialogModule,
   ],
   providers:[HttpClientService],
   declarations: 

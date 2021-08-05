@@ -1,0 +1,24 @@
+<div class="modal-top">
+    <h1 mat-dialog-title>Vacancy creation form</h1>
+    <button mat-icon-button aria-label="Close" (click)="onNoClick()">
+    <mat-icon>close</mat-icon>
+</button>
+</div>
+<h2>Main info</h2>
+<div mat-dialog-content>
+    <!-- <form class="form-container"> -->
+        <mat-label>Title</mat-label>
+        <mat-form-field appearance="fill">
+            <input matInput [(ngModel)]="data.title" placeholder="Enter title">
+        </mat-form-field>
+        <mat-label>Description vacancy</mat-label>
+        <mat-form-field appearance="fill">
+            <input matInput [(ngModel)]="data.description" placeholder="Enter text">
+        </mat-form-field>
+    <!-- </form> -->
+</div>
+<div mat-dialog-actions>
+    <app-button mat-raised-button [mat-dialog-close]="data">Save</app-button>
+    <app-button [mat-dialog-close]="data">Save and add another</app-button>
+    <app-button (click)="onNoClick()">Cancel</app-button>
+</div>

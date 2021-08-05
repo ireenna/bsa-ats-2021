@@ -14,6 +14,7 @@ import { CandidateColumnComponent } from './components/candidate-column/candidat
 import { VacanciesStagesBoardComponent } from './components/vacancies-stages-board/vacancies-stages-board.component';
 
 import { VacanciesListComponent } from './components/vacancies-list/vacancies-list.component';
+import { EditVacancyComponent } from './components/edit-vacancy/edit-vacancy.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { VacanciesListComponent } from './components/vacancies-list/vacancies-li
     CandidateColumnComponent,
     VacanciesStagesBoardComponent,
     VacanciesListComponent,
+    EditVacancyComponent,
   ],
   imports: [
     CommonModule,

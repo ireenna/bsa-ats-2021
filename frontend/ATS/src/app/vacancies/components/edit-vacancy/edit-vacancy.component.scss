@@ -1,0 +1,14 @@
+.modal-top{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.form-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.mat-dialog-actions>*{
+    margin-right: 10px;
+}
