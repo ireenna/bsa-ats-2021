@@ -15,6 +15,8 @@ import { VacanciesStagesBoardComponent } from './components/vacancies-stages-boa
 
 import { VacanciesListComponent } from './components/vacancies-list/vacancies-list.component';
 import { EditVacancyComponent } from './components/edit-vacancy/edit-vacancy.component';
+import { StageComponent } from './components/stages/stage/stage.component';
+import { CreateStageComponent } from './components/stages/create-stage/create-stage.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +25,8 @@ import { EditVacancyComponent } from './components/edit-vacancy/edit-vacancy.com
     VacanciesStagesBoardComponent,
     VacanciesListComponent,
     EditVacancyComponent,
+    StageComponent,
+    CreateStageComponent,
   ],
   imports: [
     CommonModule,

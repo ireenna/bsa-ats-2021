@@ -21,6 +21,7 @@ import { MatListModule} from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
 import { MultiselectComponent } from './components/multiselect/multiselect.component';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 
 @NgModule({
@@ -47,6 +48,7 @@ import {MatDialogModule} from '@angular/material/dialog';
     MatDialogModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatCheckboxModule,
   ],
   imports:[
     MatButtonModule, 
@@ -68,6 +70,7 @@ import {MatDialogModule} from '@angular/material/dialog';
     MatSelectModule,
     MatDialogModule,
     ReactiveFormsModule,
+    MatCheckboxModule,
   ],
   providers:[HttpClientService],
   declarations: 

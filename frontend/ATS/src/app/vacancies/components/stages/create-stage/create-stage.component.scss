@@ -1,0 +1,30 @@
+.buttons{
+    display:flex;
+    flex-direction:row;
+}
+.buttons>*{
+    margin-right:10px;
+}
+
+.form-container {
+    background-color: #F0F3F9;
+    border-radius:20px;
+    padding:25px;
+    display:flex;
+    flex-direction:column;
+    margin-bottom: 20px;
+    form{
+        display:flex;
+    flex-direction:column;
+    }
+}
+
+.mat-form-field{
+    margin-bottom: 15px;
+}
+
+:host ::ng-deep{
+    .mat-form-field-wrapper.mat-form-field-wrapper{
+        background-color:white !important;
+    }
+}
