@@ -10,12 +10,6 @@ namespace WebAPI.Controllers
 {
     public class UsersController : ApiController
     {
-        private ISmtp smtp;
-
-        public UsersController(ISmtp smtp)
-        {
-            this.smtp = smtp;
-        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(string id)

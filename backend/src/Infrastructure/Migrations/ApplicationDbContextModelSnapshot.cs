@@ -424,6 +424,8 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ApplicantId");
 
+                    b.HasIndex("Id");
+
                     b.HasIndex("StageId");
 
                     b.ToTable("VacancyCandidates");
