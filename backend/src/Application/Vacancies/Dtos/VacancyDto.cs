@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Models;
+using Application.Stages.Dtos;
 using Domain.Enums;
+using FluentValidation;
 
 namespace Application.Vacancies.Dtos
 {
@@ -29,5 +31,14 @@ namespace Application.Vacancies.Dtos
         public DateTime ModificationDate { get; set; }
         public DateTime CompletionDate { get; set; }
         public DateTime PlannedCompletionDate { get; set; }
+        public ICollection<StageWithCandidatesDto> Stages { get; set; }
+    }
+    public class VacancyDtoValidator : AbstractValidator<VacancyDto>
+    {
+        public VacancyDtoValidator()
+        {
+            RuleFor(_ => _.Title).NotNull().NotEmpty();
+            RuleFor(_ => _.Description).NotNull().NotEmpty();
+        }
     }
 }
