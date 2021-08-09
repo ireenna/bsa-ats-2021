@@ -41,14 +41,6 @@ namespace Infrastructure.EF
             _domainEventService = domainEventService;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("Server=(local);Database=ATS_dev;User Id=sa;Password=123Admin!;");
-            }
-        }
-
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await base.SaveChangesAsync(cancellationToken);
