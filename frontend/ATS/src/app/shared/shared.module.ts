@@ -54,7 +54,7 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
     MatNativeDateModule,
     MatCheckboxModule,
     MatProgressBarModule,
-    SpinnerComponent,
+    SpinnerComponent
   ],
   imports: [
     MatButtonModule,
