@@ -24,7 +24,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MultiselectComponent } from './components/multiselect/multiselect.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { MenuComponent } from './components/menu/menu.component';
+import { MainContentComponent } from './components/main-content/main-content.component';
+import { RouterModule } from '@angular/router';
 import { SpinnerComponent } from './components/spinner/spinner.component';
+
+
 
 @NgModule({
   exports: [
@@ -53,8 +58,9 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatCheckboxModule,
+    MenuComponent,
     MatProgressBarModule,
-    SpinnerComponent
+    SpinnerComponent,
   ],
   imports: [
     MatButtonModule,
@@ -80,6 +86,7 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
     MatDialogModule,
     ReactiveFormsModule,
     MatCheckboxModule,
+    RouterModule,
   ],
   providers: [HttpClientService],
   declarations: [
@@ -87,6 +94,8 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
     ButtonComponent,
     SearchFormComponent,
     HeaderComponent,
+    MenuComponent,
+    MainContentComponent,
     SpinnerComponent,
   ],
 })
