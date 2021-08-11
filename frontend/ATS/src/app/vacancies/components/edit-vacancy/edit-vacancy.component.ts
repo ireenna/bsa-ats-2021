@@ -26,14 +26,23 @@ export class EditVacancyComponent {
       description: ['', [Validators.required]],
       requirements: ['',[Validators.required]],
       projectId:['', [Validators.required]],
-      salaryRang:['', [Validators.required]],
-      tierRang:['', [Validators.required]],
+      salaryFrom:['', [Validators.required]],
+      salaryTo:['', [Validators.required]],
+      tierFrom:['', [Validators.required]],
+      tierTo:['', [Validators.required]],
       link:['', [Validators.required]],
       isHot:[''],
       isRemote:[''],
-    },
+    }, {validator: this.customValidationFunction}
     );
   }
+  customValidationFunction(formGroup: FormGroup): any {
+    let salaryFrom = formGroup.controls['salaryFrom'].value;
+    let salaryTo = formGroup.controls['salaryTo'].value;
+    // console.log((parseInt(salaryFrom,10) > parseInt(salaryTo,10)) ? { salaryRangeIsWrong: true } : null); 
+    // this.vacancyFormControl.salaryTo.errors.Set({ salaryRangeIsWrong: true });
+    return (parseInt(salaryFrom,10) > parseInt(salaryTo,10) ? { salaryRangeIsWrong: true } : null);
+ }
 
   private projects: Project[] = [
     {name: 'Bank A (Switzerland)', id: 'A'},
@@ -63,6 +72,7 @@ export class EditVacancyComponent {
   createVacancy(){
     console.log(this.vacancyForm);
     console.log(this.vacancyForm.value);
+    console.log(this.vacancyForm.errors?.salaryRangeIsWrong);
     this.submitted = true;
     // this.dialogRef.close();
   }
