@@ -1,0 +1,18 @@
+import { Stage } from "../stages/stage";
+
+export interface VacancyCreate{
+    title:string
+    description:string,
+    requirements:string,
+    projectId:string,
+    salaryFrom:number,
+    salaryTo:number,
+    tierFrom:number,
+    tierTo:number,
+    sources:string,
+    isHot:boolean,
+    isRemote:boolean,
+    stages:Stage[],
+    responsibleHrId: string,
+    companyId: string
+}
