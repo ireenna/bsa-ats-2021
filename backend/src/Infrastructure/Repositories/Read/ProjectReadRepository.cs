@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories.Read
         {
             var connection = _connectionFactory.GetSqlConnection();
             await connection.OpenAsync();
-            string sql = $"SELECT * FROM {_tableName} WHERE CompanyId = @companyId";
+            string sql = $"SELECT * FROM {_tableName} WHERE CompanyId = '{companyId}'";
 
             var projects = (await connection.QueryAsync<Project>(sql)).ToList();
 

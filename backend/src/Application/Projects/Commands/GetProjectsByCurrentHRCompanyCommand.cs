@@ -40,9 +40,13 @@ namespace Application.Projects.Commands
 
         public async Task<List<ProjectDto>> Handle(GetProjectsByCurrentHRCompanyCommand command, CancellationToken _)
         {
-            //(await _currentUserContext.GetCurrentUser()).CompanyId
-            List<Project> projects = await _projectRepository.GetByCompanyIdAsync("1");
-            
+            //var currUser = await _currentUserContext.GetCurrentUser();
+
+            //if (currUser is null)
+            //    throw new Exception("There is no such user");
+
+            List<Project> projects = await _projectRepository.GetByCompanyIdAsync("1"); //currUser.CompanyId
+
             return _mapper.Map<List<ProjectDto>>(projects);
         }
     }
