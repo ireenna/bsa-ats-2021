@@ -20,12 +20,6 @@ namespace Infrastructure.EF.Seeds
             VacancyStatus.Vacation,
             VacancyStatus.Former
         };
-        private  IList<Tier> Tiers = new List<Tier>{
-           Tier.Junior,
-           Tier.Middle,
-           Tier.Senior,
-           Tier.TeamLead
-        };
         private Vacancy GenerateVacancy(string id){
             return  new Vacancy
             {
@@ -42,8 +36,8 @@ namespace Infrastructure.EF.Seeds
                 SalaryTo = _random.Next(1300, 56000),
                 CompletionDate = GetRandomDateTime(-29),
                 PlannedCompletionDate = GetRandomDateTime(-30),
-                TierFrom = Tiers[_random.Next(Tiers.Count)],
-                TierTo = Tiers[_random.Next(Tiers.Count)],
+                TierFrom = _random.Next(1, 7),
+                TierTo = _random.Next(1, 7),
                 Sources = "¯\\_(ツ)_/¯",
                 ProjectId = ProjectIds[_random.Next(ProjectIds.Count)],
                 ResponsibleHrId = ResponsibleHrIds[_random.Next(ResponsibleHrIds.Count)],

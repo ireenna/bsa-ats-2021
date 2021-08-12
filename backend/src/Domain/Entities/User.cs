@@ -20,6 +20,7 @@ namespace Domain.Entities
 
         public string CompanyId { get; set; }
         public Company Company { get; set; }
+        public string ResetPasswordToken { get; set; }
 
         public ICollection<Vacancy> Vacancies { get; set; }
         public ICollection<VacancyCandidate> AddedCandidates { get; set; }
