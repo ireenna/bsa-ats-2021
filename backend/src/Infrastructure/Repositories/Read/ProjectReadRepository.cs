@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Domain.Entities;
 using Domain.Interfaces.Read;
+using Domain.Entities;
 using Infrastructure.Dapper.Interfaces;
 using Infrastructure.Repositories.Abstractions;
 

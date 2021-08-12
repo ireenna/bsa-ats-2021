@@ -5,15 +5,20 @@ import { VacanciesListComponent } from
 import { UserRoutingModule } from '../users/user-routing.module';
 import { VacanciesRoutingModule } from '../vacancies/vacancies-routing.module';
 import { AppRoute } from './AppRoute';
+
+import { VacanciesTableComponent }
+  from '../vacancies/components/vacancies-table/vacancies-table.component';
 import { MainContentComponent } from
   '../shared/components/main-content/main-content.component';
 import { HomeComponent } from '../users/components/home/home.component';
+
+
 
 const routes: Routes = [
   {
     path: '', component: MainContentComponent, children: [
       { path: AppRoute.Home, component: HomeComponent, pathMatch: 'full' },
-      { path: AppRoute.Vacancies, component: VacanciesListComponent, pathMatch: 'full' },
+      { path: AppRoute.Vacancies, component: VacanciesTableComponent, pathMatch: 'full' },
       { path: AppRoute.Applicants, component: VacanciesListComponent, pathMatch: 'full' },
       { path: AppRoute.Interviews, component: VacanciesListComponent, pathMatch: 'full' },
       { path: AppRoute.Analytics, component: VacanciesListComponent, pathMatch: 'full' },

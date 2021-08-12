@@ -1,5 +1,7 @@
+import { MatSortModule } from '@angular/material/sort';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import {MatTabsModule} from '@angular/material/tabs';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { RoutingModule } from '../routing/routing.module';
 import { SharedModule } from '../shared/shared.module';
@@ -14,10 +16,17 @@ import { OneCandidateModalComponent } from './components/one-candidate-modal/one
 import { EditVacancyComponent } from './components/edit-vacancy/edit-vacancy.component';
 import { StageComponent } from './components/stages/stage/stage.component';
 import { CreateStageComponent } from './components/stages/create-stage/create-stage.component';
+
+import { VacanciesTableComponent } from './components/vacancies-table/vacancies-table.component';
+import { StylePaginatorDirective } from 'src/app/shared/directives/style-paginator.directive';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 // This line can't be shorter
 // eslint-disable-next-line max-len
 import { VacanciesStagesBoardComponent } from './components/vacancies-stages-board/vacancies-stages-board.component';
-
 @NgModule({
   declarations: [
     CandidateCardComponent,
@@ -29,15 +38,36 @@ import { VacanciesStagesBoardComponent } from './components/vacancies-stages-boa
     CreateStageComponent,
     OneCandidateComponent,
     OneCandidateModalComponent,
+    VacanciesTableComponent,
+    StylePaginatorDirective,
   ],
-  imports: [CommonModule, RoutingModule, DragDropModule, SharedModule],
+  imports: [
+    MatDialogModule,
+    CommonModule,
+    RoutingModule,
+    MatIconModule,
+    MatSortModule,
+    MatButtonModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatTabsModule,
+    DragDropModule,
+    SharedModule,
+    CommonModule,
+    RoutingModule,
+    DragDropModule,
+    SharedModule,
+  ],
+
   exports: [
     CandidateCardComponent,
     CandidateColumnComponent,
     VacanciesStagesBoardComponent,
     VacanciesListComponent,
+    VacanciesTableComponent,
     OneCandidateComponent,
     OneCandidateModalComponent,
+
   ],
 })
-export class VacanciesModule {}
+export class VacanciesModule { }
