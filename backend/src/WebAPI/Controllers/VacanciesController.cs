@@ -8,18 +8,21 @@ using Application.Vacancies.Commands.Create;
 using Application.Vacancies.Commands.Edit;
 using Application.Vacancies.Dtos;
 using Application.Vacancies.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
     public class VacanciesController : ApiController
     {
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAllVacancies()
         {
             var command = new GetVacancyTablesListQuery();
             return Ok(await Mediator.Send(command));
         }
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> CreateVacancy(VacancyCreateDto vacancy)
         {

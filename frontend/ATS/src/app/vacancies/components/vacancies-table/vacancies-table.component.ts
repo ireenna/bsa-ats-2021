@@ -8,6 +8,7 @@ import { StylePaginatorDirective } from 'src/app/shared/directives/style-paginat
 import { VacancyStatus } from 'src/app/shared/models/vacancy/vacancy-status';
 import { VacancyData } from 'src/app/shared/models/vacancy/vacancy-data';
 import { VacancyDataService } from 'src/app/shared/services/vacancy-data.service';
+import { EditVacancyComponent } from '../edit-vacancy/edit-vacancy.component';
 
 ​
 const HRs: string[] = [
@@ -64,6 +65,19 @@ export class VacanciesTableComponent implements AfterViewInit {
     // Assign the data to the data source for the table to render
     this.dataSource = new MatTableDataSource<VacancyData>();
   }
+  openDialog(): void {
+    const dialogRef = this.dialog.open(EditVacancyComponent, {
+      width: '914px',
+      height: 'auto',
+      data: {title: 'nameee', description:'desc'}
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      console.log('The dialog was closed');
+      // this.animal = result;
+    });
+  }
+
   public getStatus(index:number): string{
     return VacancyStatus[index];
   }

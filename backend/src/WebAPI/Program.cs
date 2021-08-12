@@ -10,24 +10,12 @@ namespace WebAPI
         public async static Task Main(string[] args)
         {
             (
-                await 
-                (     
-                    await 
-                    (
-                        await 
-                        (
-                            (
-                                await (await CreateHostBuilder(args)
-                                    .Build()
-                                    .ApplyDatabaseMigrations()
-                                    .CleanUp())
-                                .ApplyElasticSeeding()
-                            ).ApplyProjectSeeding()
-                        )
-                    ).ApplyUserSeeding()
-                ).ApplyVacancySeeding()
+                await CreateHostBuilder(args)
+                    .Build()
+                    .ApplyDatabaseMigrations()
+                    .ApplyElasticSeeding()
             )
-           .Run();
+            .Run();
 
         }
 
