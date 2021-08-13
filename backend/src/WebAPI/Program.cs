@@ -10,20 +10,38 @@ namespace WebAPI
         public async static Task Main(string[] args)
         {
             (
-                await CreateHostBuilder(args)
-                    .Build()
-                    .ApplyDatabaseMigrations()
-                    .ApplyElasticSeeding()
+                // await CreateHostBuilder(args)
+                //     .Build()
+                //     .ApplyDatabaseMigrations()
+                //     .ApplyElasticSeeding()
+                await 
+                (     
+                    await 
+                    (
+                        await 
+                        (
+                            (
+                                await CreateHostBuilder(args)
+                                    .Build()
+                                    .ApplyDatabaseMigrations()
+                                    .CleanUp()
+                            )
+                            .ApplyMongoSeeding()
+                            .ApplyElasticSeeding()
+                            .ApplyProjectSeeding()
+                        )
+                    ).ApplyUserSeeding()
+                ).ApplyVacancySeeding()
             )
             .Run();
 
+
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
+        }
     }
 }

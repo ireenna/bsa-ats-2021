@@ -7,6 +7,7 @@ export const environment = {
   apiUrl: 'https://localhost:44358/api',
   // apiUrl: 'https://localhost:5001/api',
   confirmEmailUrl: 'http://localhost:4200/confirm-email',
+  clientUrl: 'http://localhost:4200',
 };
 
 /*

@@ -41,7 +41,7 @@ namespace Infrastructure.EF.Seeds
                 Sources = "¯\\_(ツ)_/¯",
                 ProjectId = ProjectIds[_random.Next(ProjectIds.Count)],
                 ResponsibleHrId = ResponsibleHrIds[_random.Next(ResponsibleHrIds.Count)],
-
+                CompanyId = "1"
             };
         }
         public IEnumerable<Vacancy> Vacancies (){
