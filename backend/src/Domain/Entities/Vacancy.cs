@@ -20,8 +20,8 @@ namespace Domain.Entities
         public int SalaryTo { get; set; }
         public DateTime CompletionDate { get; set; }
         public DateTime PlannedCompletionDate { get; set; }
-        public Tier TierFrom { get; set; }
-        public Tier TierTo { get; set; }
+        public int TierFrom { get; set; }
+        public int TierTo { get; set; }
         public string Sources { get; set; }
         public string CompanyId { get; set; }
         public string ResponsibleHrId { get; set; }

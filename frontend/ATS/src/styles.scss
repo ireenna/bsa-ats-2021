@@ -45,23 +45,3 @@ body {
   font-family: "Nunito";
 }
 
-mat-list-item .mat-icon {
-  color: $primary-color;
-  font-weight: 500 !important;
-
-  .mat-line {
-    font-weight: 500 !important;
-  }
-}
-
-.toast-success-custom.toast-success {
-  background-color: rgba($color: #00ff00, $alpha: 0.5);
-}
-
-.toast-error-custom.toast-error {
-  background-color: rgba($color: #ff0000, $alpha: 0.5);
-}
-
-.toast-info-custom.toast-info {
-  background-color: rgba($color: #0000ff, $alpha: 0.5);
-}

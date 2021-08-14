@@ -4,6 +4,9 @@ using Application.Users.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
+using Application.Projects.Dtos;
+using Application.Projects.Commands;
 using WebAPI.Extensions;
 using Application.Interfaces;
 using Application.Common.Exceptions;
@@ -49,6 +52,13 @@ namespace WebAPI.Controllers
         {
             var command = new CreateEntityCommand<UserDto>(user);
             return StatusCode(201, await Mediator.Send(command));
+        }
+
+        [HttpGet("current/company/projects")]
+        public async Task<IActionResult> CurrentHRProjects()
+        {
+            var query = new GetProjectsByCurrentHRCompanyCommand();
+            return Ok(await Mediator.Send(query));
         }
     }
 }

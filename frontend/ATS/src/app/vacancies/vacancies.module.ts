@@ -13,6 +13,9 @@ import { OneCandidateComponent } from './components/one-candidate/one-candidate.
 // This line can't be shorter
 // eslint-disable-next-line max-len
 import { OneCandidateModalComponent } from './components/one-candidate-modal/one-candidate-modal.component';
+import { EditVacancyComponent } from './components/edit-vacancy/edit-vacancy.component';
+import { StageComponent } from './components/stages/stage/stage.component';
+import { CreateStageComponent } from './components/stages/create-stage/create-stage.component';
 
 import { VacanciesTableComponent } from './components/vacancies-table/vacancies-table.component';
 import { StylePaginatorDirective } from 'src/app/shared/directives/style-paginator.directive';
@@ -30,6 +33,9 @@ import { VacanciesStagesBoardComponent } from './components/vacancies-stages-boa
     CandidateColumnComponent,
     VacanciesStagesBoardComponent,
     VacanciesListComponent,
+    EditVacancyComponent,
+    StageComponent,
+    CreateStageComponent,
     OneCandidateComponent,
     OneCandidateModalComponent,
     VacanciesTableComponent,

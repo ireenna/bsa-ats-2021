@@ -22,6 +22,8 @@ import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MultiselectComponent } from './components/multiselect/multiselect.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import { TopicComponent } from './components/topic/topic.component';
 import { FileInputComponent } from './components/file-input/file-input.component';
 import { MenuComponent } from './components/menu/menu.component';
@@ -54,8 +56,10 @@ import { StylePaginatorDirective } from './directives/style-paginator.directive'
     MatDialogModule,
     MatSelectModule,
     MultiselectComponent,
+    MatDialogModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatCheckboxModule,
     TopicComponent,
     FileInputComponent,
     MenuComponent,
@@ -84,7 +88,9 @@ import { StylePaginatorDirective } from './directives/style-paginator.directive'
     BrowserAnimationsModule,
     BrowserModule,
     MatSelectModule,
+    MatDialogModule,
     ReactiveFormsModule,
+    MatCheckboxModule,
     RouterModule,
   ],
   providers: [HttpClientService],

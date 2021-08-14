@@ -2,6 +2,22 @@
     width: 107px;
     height: 54px;
   }
+  
+  .mat-icon{
+      color: #EE2A64;
+      font-weight: 500;
+    }
+
+  .mat-list-item .mat-line{
+        font-weight: 600;
+  }
+  
+  .mat-list-item.active{
+    .mat-line{
+      color: #EE2A64;
+      font-weight: 700;
+    }
+  } 
 
   .logo-container{
     padding-top: 32px;
@@ -54,4 +70,5 @@
     text-overflow: unset;
     display: block;
     box-sizing: border-box;
+    font-weight: 500;
   }

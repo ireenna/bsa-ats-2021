@@ -18,8 +18,8 @@ namespace Application.Vacancies.Dtos
         public string ProjectId { get; set; }
         public int SalaryFrom { get; set; }
         public int SalaryTo { get; set; }
-        public Tier TierFrom { get; set; }
-        public Tier TierTo { get; set; }
+        public int TierFrom { get; set; }
+        public int TierTo { get; set; }
         public string Sources { get; set; }
         public bool IsHot { get; set; }
         public bool IsRemote { get; set; }

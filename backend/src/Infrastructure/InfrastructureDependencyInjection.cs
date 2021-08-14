@@ -146,6 +146,7 @@ namespace Infrastructure
             services.AddScoped<IReadRepository<Role>, RoleReadRepository>();
             services.AddScoped<IReadRepository<UserToRole>, UserToRoleReadRepository>();
             services.AddScoped<IUserReadRepository, UserReadRepository>();
+            services.AddScoped<IProjectReadRepository, ProjectReadRepository>();
             services.AddScoped<IRTokenReadRepository, RTokenReadRepository>();
             
             services.AddScoped<IReadRepository<ApplicantCv>, MongoReadRespoitory<ApplicantCv>>();

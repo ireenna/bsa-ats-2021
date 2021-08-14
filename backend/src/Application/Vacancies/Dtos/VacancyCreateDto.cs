@@ -18,8 +18,8 @@ namespace Application.Vacancies.Dtos
         public string ProjectId { get; set; }
         public int SalaryFrom { get; set; }
         public int SalaryTo { get; set; }
-        public Tier TierFrom { get; set; }
-        public Tier TierTo { get; set; }
+        public int TierFrom { get; set; }
+        public int TierTo { get; set; }
         public string Sources { get; set; }
         public bool IsHot { get; set; }
         public bool IsRemote { get; set; }
@@ -37,8 +37,8 @@ namespace Application.Vacancies.Dtos
             RuleFor(_ => _.ProjectId).NotNull().NotEmpty();
             RuleFor(_ => _.SalaryFrom).NotNull().NotEmpty().GreaterThan(0);
             RuleFor(_ => _.SalaryTo).NotNull().NotEmpty().GreaterThanOrEqualTo(_=>_.SalaryFrom);
-            RuleFor(_ => _.TierFrom).NotNull().NotEmpty();
-            RuleFor(_ =>(int)_.TierTo).NotNull().NotEmpty().GreaterThanOrEqualTo(_ => (int)_.TierFrom);
+            RuleFor(_ => _.TierFrom).NotNull().NotEmpty().GreaterThan(0).LessThanOrEqualTo(7);
+            RuleFor(_ =>_.TierTo).NotNull().NotEmpty().GreaterThanOrEqualTo(_ => _.TierFrom).LessThanOrEqualTo(7);
             RuleFor(_ => _.Sources).NotNull().NotEmpty();
             RuleFor(_ => _.CompanyId).NotNull().NotEmpty();
             RuleFor(_ => _.ResponsibleHrId).NotNull().NotEmpty();
