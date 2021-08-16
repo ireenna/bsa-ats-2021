@@ -23,7 +23,7 @@ namespace Application.Vacancies.Dtos
         public string Sources { get; set; }
         public bool IsHot { get; set; }
         public bool IsRemote { get; set; }
-        public ICollection<StageWithCandidatesDto> Stages { get; set; }
+        //public ICollection<StageCreateDto> Stages { get; set; }
         public string CompanyId { get; set; }
         public string ResponsibleHrId { get; set; }
     }
@@ -40,8 +40,6 @@ namespace Application.Vacancies.Dtos
             RuleFor(_ => _.TierFrom).NotNull().NotEmpty().GreaterThan(0).LessThanOrEqualTo(7);
             RuleFor(_ =>_.TierTo).NotNull().NotEmpty().GreaterThanOrEqualTo(_ => _.TierFrom).LessThanOrEqualTo(7);
             RuleFor(_ => _.Sources).NotNull().NotEmpty();
-            RuleFor(_ => _.CompanyId).NotNull().NotEmpty();
-            RuleFor(_ => _.ResponsibleHrId).NotNull().NotEmpty();
         }
     }
 }

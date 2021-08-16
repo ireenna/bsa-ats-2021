@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.Commands;
+using Application.Common.Exceptions;
+using Application.Stages.Commands;
 using Application.Vacancies.Dtos;
 using AutoMapper;
 using Domain.Entities;
@@ -29,38 +32,25 @@ namespace Application.Vacancies.Commands.Edit
         private readonly IWriteRepository<Vacancy> _writeRepository;
         private readonly IReadRepository<Vacancy> _readRepository;
         private readonly IMapper _mapper;
+        private readonly ISender _mediator;
 
         public EditVacancyCommandHandler(
             IWriteRepository<Vacancy> writeRepository,
             IReadRepository<Vacancy> readRepository,
-            IMapper mapper
+            IMapper mapper, ISender mediator
         )
         {
             _readRepository = readRepository;
             _writeRepository = writeRepository;
             _mapper = mapper;
+            _mediator = mediator;
         }
 
         public async Task<VacancyDto> Handle(EditVacancyCommand command, CancellationToken _)
         {
-            var updateVacancy = _mapper.Map<Vacancy>(command.VacancyUpdate);
-            var existedVacancy = await _readRepository.GetAsync(command.Id);
-            existedVacancy.Title = updateVacancy.Title;
-            existedVacancy.Description = updateVacancy.Description;
-            existedVacancy.Requirements = updateVacancy.Requirements;
-            existedVacancy.ProjectId = updateVacancy.ProjectId;
-            existedVacancy.SalaryFrom = updateVacancy.SalaryFrom;
-            existedVacancy.SalaryTo = updateVacancy.SalaryTo;
-            existedVacancy.TierFrom = updateVacancy.TierFrom;
-            existedVacancy.TierTo = updateVacancy.TierTo;
-            existedVacancy.Sources = updateVacancy.Sources;
-            existedVacancy.IsHot = updateVacancy.IsHot;
-            existedVacancy.IsRemote = updateVacancy.IsRemote;
-            existedVacancy.Stages = updateVacancy.Stages;
-            existedVacancy.ModificationDate = DateTime.Now;
-
-            await _writeRepository.UpdateAsync(existedVacancy);
-            var updatedVacancy = _mapper.Map<VacancyDto>(existedVacancy);
+            var updatableVacancy = _mapper.Map<VacancyDto>(command.VacancyUpdate);
+            var query = new UpdateEntityCommand<VacancyDto>(updatableVacancy);
+            var updatedVacancy = await _mediator.Send(query);
 
             return updatedVacancy;
         }

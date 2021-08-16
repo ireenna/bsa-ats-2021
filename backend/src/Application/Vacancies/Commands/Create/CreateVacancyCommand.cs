@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Commands;
+using Application.Interfaces;
+using Application.Stages.Commands;
 using Application.Vacancies.Dtos;
 using AutoMapper;
 using Domain.Entities;
@@ -13,10 +15,6 @@ using MediatR;
 
 namespace Application.Vacancies.Commands.Create
 {
-    //public class CreateVacancyCommandHandler : CreateEntityCommandHandler<Vacancy, VacancyCreateDto>
-    //{
-    //    public CreateVacancyCommandHandler(IWriteRepository<Vacancy> repository, IMapper mapper) : base(repository, mapper) { }
-    //}
     public class CreateVacancyCommand : IRequest<VacancyDto>
     {
         public VacancyCreateDto VacancyCreate { get; set; }
@@ -30,25 +28,43 @@ namespace Application.Vacancies.Commands.Create
         public class CreateVacancyCommandHandler : IRequestHandler<CreateVacancyCommand, VacancyDto>
         {
             private readonly IWriteRepository<Vacancy> _writeRepository;
+            private readonly IWriteRepository<Stage> _writeStageRepository;
             private readonly IMapper _mapper;
+            private readonly ISender _mediator;
+        private readonly ICurrentUserContext _currUser;
 
-            public CreateVacancyCommandHandler(
+        public CreateVacancyCommandHandler(
                 IWriteRepository<Vacancy> writeRepository,
-                IMapper mapper
+                IWriteRepository<Stage> writeStageRepository,
+                IMapper mapper, ISender mediator, ICurrentUserContext currUser
             )
             {
+                _writeStageRepository = writeStageRepository;
                 _writeRepository = writeRepository;
                 _mapper = mapper;
+                _mediator = mediator;
+            _currUser = currUser;
             }
 
             public async Task<VacancyDto> Handle(CreateVacancyCommand command, CancellationToken _)
             {
-                var newUser = _mapper.Map<Vacancy>(command.VacancyCreate);
+                var user = await _currUser.GetCurrentUser();
+                if (user is null)
+                {
+                    throw new Exception("user not found");
+                }
 
-                await _writeRepository.CreateAsync(newUser);
-                var registeredUser = _mapper.Map<VacancyDto>(newUser);
+                command.VacancyCreate.ResponsibleHrId = user.Id;
+                command.VacancyCreate.CompanyId = user.CompanyId;
 
-                return registeredUser;
+                var newVacancy = _mapper.Map<Vacancy>(command.VacancyCreate);
+                await _writeRepository.CreateAsync(newVacancy);
+
+                //command.VacancyCreate.Stages.ToList().ForEach(async x=>await _mediator.Send(new CreateVacancyStageCommand(x, newVacancy.Id)) );
+                
+                var registeredVacancy = _mapper.Map<VacancyDto>(newVacancy);
+
+                return registeredVacancy;
             }
         }
     }

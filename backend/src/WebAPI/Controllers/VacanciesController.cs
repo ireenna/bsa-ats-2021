@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Application.Common.Commands;
 using Application.Common.Queries;
+using Application.Stages.Commands;
+using Application.Stages.Dtos;
 using Application.Vacancies.Commands.Create;
 using Application.Vacancies.Commands.Edit;
 using Application.Vacancies.Dtos;
@@ -15,16 +17,14 @@ namespace WebAPI.Controllers
 {
     public class VacanciesController : ApiController
     {
-        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAllVacancies()
         {
             var command = new GetVacancyTablesListQuery();
             return Ok(await Mediator.Send(command));
         }
-        [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> CreateVacancy(VacancyCreateDto vacancy)
+        public async Task<IActionResult> CreateVacancyWithStages(VacancyCreateDto vacancy)
         {
             var command = new CreateVacancyCommand(vacancy);
             return StatusCode(201,await Mediator.Send(command));
@@ -35,5 +35,23 @@ namespace WebAPI.Controllers
             var command = new EditVacancyCommand(vacancy, id);
             return StatusCode(201, await Mediator.Send(command));
         }
+        [HttpPost("{vacancyId}/stages")]
+        public async Task<IActionResult> CreateVacancyStage(StageCreateDto stage, [FromRoute] string vacancyId)
+        {
+            var command = new CreateVacancyStageCommand(stage, vacancyId);
+            return StatusCode(201, await Mediator.Send(command));
+        }
+        [HttpPut("{vacancyId}/stages/{stageId}")]
+        public async Task<IActionResult> EditVacancyStage(StageUpdateDto stage, [FromRoute] string vacancyId, [FromRoute] string stageId)
+        {
+            var command = new EditVacancyStageCommand(stage, vacancyId, stageId);
+            return StatusCode(201, await Mediator.Send(command));
+        }
+        //[HttpDelete("{vacancyId}/stages/{stageId}")]
+        //public async Task<IActionResult> DeleteVacancyStage(StageUpdateDto stage, [FromRoute] string vacancyId, [FromRoute] string stageId)
+        //{
+        //    var command = new DeleteVacancyStageCommand(stage, vacancyId, stageId);
+        //    return StatusCode(201, await Mediator.Send(command));
+        //}
     }
 }

@@ -30,7 +30,6 @@ import { MenuComponent } from './components/menu/menu.component';
 import { MainContentComponent } from './components/main-content/main-content.component';
 import { RouterModule } from '@angular/router';
 import { SpinnerComponent } from './components/spinner/spinner.component';
-import { MatDialogModule } from '@angular/material/dialog';
 import { StylePaginatorDirective } from './directives/style-paginator.directive';
 
 @NgModule({

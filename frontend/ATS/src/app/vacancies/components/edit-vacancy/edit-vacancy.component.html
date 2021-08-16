@@ -42,6 +42,10 @@
               <mat-select formControlName="projectId" placeholder="Select project">
                 <input matInput class="search-input" type="text" autocomplete="off" placeholder="Search project..." (keyup)="onKey($event)">
                <mat-option>None</mat-option>
+               <mat-option value="GMail">GMail</mat-option>
+               <mat-option value="Google drive">Google drive</mat-option>
+               <mat-option value="Google photos">Google photos</mat-option>
+               <mat-option value="Google pay">Google pay</mat-option>
                <mat-option *ngFor="let project of selectedProjects" [value]="project.id">{{project.name}}</mat-option>
              </mat-select>
             <mat-error *ngIf="(vacancyFormControl.projectId.touched || submitted) && vacancyFormControl.projectId.errors?.required">
@@ -133,13 +137,13 @@
         <div class="workflow-container">
             <h2><b>Workflow</b></h2>
             <div class="stage-list" >
-            <div *ngFor="let _stage of stageList">
-                <app-stage [stage]=_stage></app-stage>
+            <div *ngFor="let _stage of stageList" >
+                <app-stage [stage]=_stage (isDeletedStage)="onDeleteStage($event)" draggable='true'></app-stage>
             </div>
             <button mat-stroked-button class="add-stage-button" (click)="displayCreateStage()">+ Add new stage</button>
             </div>
             <div *ngIf="this.isOpenCreateStage">
-                <app-create-stage></app-create-stage>
+                <app-create-stage (stageChange)="saveStage($event)" (stageCreateAndAddChange)="saveStageAndAdd($event)" (isClosedChange)="displayCreateStage()"></app-create-stage>
             </div>
         </div>
             <button mat-button type="submit" style="margin-bottom:50px"[disabled]="vacancyForm.invalid">Publish</button>

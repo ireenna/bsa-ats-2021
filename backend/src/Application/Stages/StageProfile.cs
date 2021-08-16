@@ -15,6 +15,11 @@ namespace Application.Stages
                     opt => opt.MapFrom(s =>
                         s.CandidateToStages.Select(cts => cts.Candidate))
                 );
+            CreateMap<StageCreateDto, Stage>();
+            CreateMap<StageUpdateDto, Stage>();
+            CreateMap<Stage, StageDto>();
+            CreateMap<Action, ActionDto>();
+            CreateMap<ActionDto,Action>();
         }
     }
 }

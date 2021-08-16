@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Inject, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSelect } from '@angular/material/select';
@@ -7,6 +7,7 @@ import { take, takeUntil } from 'rxjs/operators';
 import { Project } from 'src/app/shared/models/projects/project';
 import { Stage } from 'src/app/shared/models/stages/stage';
 import { VacancyCreate } from 'src/app/shared/models/vacancy/vacancy-create';
+import { VacancyFull } from 'src/app/shared/models/vacancy/vacancy-full';
 import { ProjectService } from 'src/app/shared/services/project.service';
 import { VacancyService } from 'src/app/shared/services/vacancy.service';
 
@@ -22,6 +23,7 @@ export class EditVacancyComponent implements OnInit {
   submitted:Boolean = false;
   selectedProjects:Project[] = []; 
   vacancy:VacancyCreate = {} as VacancyCreate;
+  @Output() vacancyChange = new EventEmitter<VacancyFull>();
   
   constructor(
     public dialogRef: MatDialogRef<EditVacancyComponent>,
@@ -41,6 +43,7 @@ export class EditVacancyComponent implements OnInit {
       link:['', [Validators.required]],
       isHot:[''],
       isRemote:[''],
+      stages:this.stageList
     }, {validator: this.customValidationFunction}
     );
     
@@ -71,7 +74,7 @@ export class EditVacancyComponent implements OnInit {
     },
     {
       name: "Technical test",
-      index:1,
+      index:3,
       isReviewable:true,
       vacancyId:"1"
     }
@@ -79,18 +82,15 @@ export class EditVacancyComponent implements OnInit {
   customValidationFunction(formGroup: FormGroup): any {
     let salaryFrom = formGroup.controls['salaryFrom'].value;
     let salaryTo = formGroup.controls['salaryTo'].value;
-    // console.log((parseInt(salaryFrom,10) > parseInt(salaryTo,10)) ? { salaryRangeIsWrong: true } : null); 
-    // this.vacancyFormControl.salaryTo.errors.Set({ salaryRangeIsWrong: true });
     return (parseInt(salaryFrom,10) > parseInt(salaryTo,10) ? { salaryRangeIsWrong: true } : null);
  }
- //tierFrom     --- tierTo
- //3            --- +
 
  isTierFromLessTierTo(tierTo:Number):Boolean{
     let tierFrom = parseInt(this.vacancyForm.controls['tierFrom'].value,10)
     if(tierFrom <= tierTo){
       return true;
     }
+    this.vacancyForm.controls['tierTo'].reset;
     return false;
  }
 
@@ -124,13 +124,32 @@ export class EditVacancyComponent implements OnInit {
     console.log(this.vacancy)
     this.vacancyService.postVacancy(this.vacancy)
     .subscribe(
-      response=>console.log(response)
+      response=> this.vacancyChange.emit(response)
     );
     // this.dialogRef.close();
   }
 
   get vacancyFormControl() {
     return this.vacancyForm.controls;
+  }
+
+  saveStage(newStage:Stage){
+    newStage.index = this.stageList.length + 1;
+    this.stageList.push(newStage);
+    console.log(this.stageList);
+    this.displayCreateStage();
+  }
+
+  saveStageAndAdd(newStage:Stage){
+    newStage.index = this.stageList.length + 1;
+    this.stageList.push(newStage);
+    console.log(this.stageList)
+  }
+
+  onDeleteStage(selectedStage:Stage){
+    let id  = this.stageList.findIndex((a)=>a.index == selectedStage.index)
+    this.stageList.splice(id, 1);
+    console.log(this.stageList)
   }
 
   displayCreateStage(){
@@ -149,12 +168,8 @@ export class EditVacancyComponent implements OnInit {
     }
   }
 
-// Initially fill the selectedStates so it can be used in the for loop** 
-
-
-// Receive user input and send to search method**
 onKey(event:Event) { 
-this.selectedProjects = this.search((<HTMLInputElement>event.target).value);
+  this.selectedProjects = this.search((<HTMLInputElement>event.target).value);
 }
 
 // Filter the states list and send back to populate the selectedStates**

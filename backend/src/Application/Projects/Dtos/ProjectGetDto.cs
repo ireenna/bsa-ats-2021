@@ -10,8 +10,8 @@ namespace Application.Projects.Dtos
 {
     public class ProjectGetDto : ProjectDto
     {
-        public string CompanyId { get; set; }
-        public DateTime CreationDate { get; set; }
+        //public string CompanyId { get; set; }
+        //public DateTime CreationDate { get; set; }
         public ICollection<VacancyTableDto> Vacancies { get; set; }
     }
     public class ProjectGetDtoValidator : AbstractValidator<ProjectGetDto>

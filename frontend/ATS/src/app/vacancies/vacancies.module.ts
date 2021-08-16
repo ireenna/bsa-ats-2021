@@ -7,7 +7,6 @@ import { RoutingModule } from '../routing/routing.module';
 import { SharedModule } from '../shared/shared.module';
 import { CandidateCardComponent } from './components/candidate-card/candidate-card.component';
 import { CandidateColumnComponent } from './components/candidate-column/candidate-column.component';
-import { VacanciesListComponent } from './components/vacancies-list/vacancies-list.component';
 import { OneCandidateComponent } from './components/one-candidate/one-candidate.component';
 
 // This line can't be shorter
@@ -32,7 +31,6 @@ import { VacanciesStagesBoardComponent } from './components/vacancies-stages-boa
     CandidateCardComponent,
     CandidateColumnComponent,
     VacanciesStagesBoardComponent,
-    VacanciesListComponent,
     EditVacancyComponent,
     StageComponent,
     CreateStageComponent,
@@ -62,7 +60,6 @@ import { VacanciesStagesBoardComponent } from './components/vacancies-stages-boa
     CandidateCardComponent,
     CandidateColumnComponent,
     VacanciesStagesBoardComponent,
-    VacanciesListComponent,
     VacanciesTableComponent,
     OneCandidateComponent,
     OneCandidateModalComponent,
