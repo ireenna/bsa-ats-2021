@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Application.Vacancies.Dtos;
 using Application.Stages.Queries;
 using Microsoft.AspNetCore.Authorization;
+using Application.Vacancies.Commands.Create;
+using Application.Stages.Dtos;
+using Application.Stages.Commands.Create;
 
 namespace WebAPI.Controllers
 {
@@ -16,6 +19,13 @@ namespace WebAPI.Controllers
         {
             var query = new GetStagesByVacancyQuery(id);
             return Ok(await Mediator.Send(query));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateStage(StageCreateDto stage)
+        {
+            var command = new CreateStageCommand(stage);
+            return StatusCode(201, await Mediator.Send(command));
         }
     }
 }

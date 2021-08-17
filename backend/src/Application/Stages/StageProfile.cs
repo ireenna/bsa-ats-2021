@@ -9,6 +9,8 @@ namespace Application.Stages
     {
         public StageProfile()
         {
+            CreateMap<StageCreateDto, Stage>();
+            CreateMap<Stage, StageDto>();
             CreateMap<Stage, StageWithCandidatesDto>()
                 .ForMember(
                     dto => dto.Candidates,
