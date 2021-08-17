@@ -10,7 +10,7 @@ using FluentValidation;
 
 namespace Application.Vacancies.Dtos
 {
-    public class VacancyCreateDto : Dto
+    public class VacancyCreateDto
     {
         public string Title { get; set; }
         public string Description { get; set; }
@@ -23,9 +23,7 @@ namespace Application.Vacancies.Dtos
         public string Sources { get; set; }
         public bool IsHot { get; set; }
         public bool IsRemote { get; set; }
-        public ICollection<StageWithCandidatesDto> Stages { get; set; }
-        public string CompanyId { get; set; }
-        public string ResponsibleHrId { get; set; }
+
     }
     public class VacancyCreateDtoValidator : AbstractValidator<VacancyCreateDto>
     {
@@ -36,12 +34,10 @@ namespace Application.Vacancies.Dtos
             RuleFor(_ => _.Requirements).NotNull().NotEmpty();
             RuleFor(_ => _.ProjectId).NotNull().NotEmpty();
             RuleFor(_ => _.SalaryFrom).NotNull().NotEmpty().GreaterThan(0);
-            RuleFor(_ => _.SalaryTo).NotNull().NotEmpty().GreaterThanOrEqualTo(_=>_.SalaryFrom);
+            RuleFor(_ => _.SalaryTo).NotNull().NotEmpty().GreaterThanOrEqualTo(_ => _.SalaryFrom);
             RuleFor(_ => _.TierFrom).NotNull().NotEmpty();
-            RuleFor(_ =>(int)_.TierTo).NotNull().NotEmpty().GreaterThanOrEqualTo(_ => (int)_.TierFrom);
+            RuleFor(_ => (int)_.TierTo).NotNull().NotEmpty().GreaterThanOrEqualTo(_ => (int)_.TierFrom);
             RuleFor(_ => _.Sources).NotNull().NotEmpty();
-            RuleFor(_ => _.CompanyId).NotNull().NotEmpty();
-            RuleFor(_ => _.ResponsibleHrId).NotNull().NotEmpty();
         }
     }
 }

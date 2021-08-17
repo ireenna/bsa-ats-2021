@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Commands;
+using Application.Common.Exceptions;
+using Application.Interfaces;
 using Application.Vacancies.Dtos;
 using AutoMapper;
 using Domain.Entities;
@@ -27,28 +29,44 @@ namespace Application.Vacancies.Commands.Create
         }
     }
 
-        public class CreateVacancyCommandHandler : IRequestHandler<CreateVacancyCommand, VacancyDto>
-        {
-            private readonly IWriteRepository<Vacancy> _writeRepository;
-            private readonly IMapper _mapper;
+    public class CreateVacancyCommandHandler : IRequestHandler<CreateVacancyCommand, VacancyDto>
+    {
+        private readonly IWriteRepository<Vacancy> _writeRepository;
+        private readonly IMapper _mapper;
+        protected readonly ICurrentUserContext _currentUserContext;
 
-            public CreateVacancyCommandHandler(
+        public CreateVacancyCommandHandler(
                 IWriteRepository<Vacancy> writeRepository,
-                IMapper mapper
+                IMapper mapper,
+                ICurrentUserContext currentUserContext
             )
+        {
+            _writeRepository = writeRepository;
+            _mapper = mapper;
+            _currentUserContext = currentUserContext;
+        }
+
+        public async Task<VacancyDto> Handle(CreateVacancyCommand command, CancellationToken _)
+        {
+
+            var user = await _currentUserContext.GetCurrentUser();
+            if (user is null)
             {
-                _writeRepository = writeRepository;
-                _mapper = mapper;
+                throw new NotFoundException(typeof(User), "unknown");
             }
 
-            public async Task<VacancyDto> Handle(CreateVacancyCommand command, CancellationToken _)
-            {
-                var newUser = _mapper.Map<Vacancy>(command.VacancyCreate);
+            var newVacancy = _mapper.Map<Vacancy>(command.VacancyCreate);
 
-                await _writeRepository.CreateAsync(newUser);
-                var registeredUser = _mapper.Map<VacancyDto>(newUser);
+            newVacancy.CompanyId = user.CompanyId;
+            newVacancy.ResponsibleHrId = user.Id;
+            newVacancy.CreationDate = DateTime.UtcNow;
+            newVacancy.ModificationDate = DateTime.UtcNow;
 
-                return registeredUser;
-            }
+
+            await _writeRepository.CreateAsync(newVacancy);
+            var registeredVacancy = _mapper.Map<VacancyDto>(newVacancy);
+
+            return registeredVacancy;
         }
     }
+}
