@@ -14,21 +14,27 @@ import { AuthGuard } from '../users/guards/auth.guard';
 import { ApplicantsComponent } from '../applicants/components/applicants/applicants.component';
 import { ProjectsListComponent } from 
   '../projects/components/projects-list/projects-list.component';
+import { UsersTableComponent } from '../users/components/hr-lead/users-table/users-table.component';
+import { HrLeadGuard } from '../users/guards/hr-lead.guard';
+import { ApplicationPoolComponent } from 
+  '../users/components/application-pool/application-pool.component';
 
 
 
 const routes: Routes = [
-  {
-    // canActivate:[AuthGuard],
-    path: '', component: MainContentComponent,  children: [
+  { 
+    path: '', component: MainContentComponent, canActivate:[AuthGuard], children: [
       { path: AppRoute.Home, component: HomeComponent, pathMatch: 'full' },
       { path: AppRoute.Vacancies, component: VacanciesTableComponent, pathMatch: 'full' },
       { path: AppRoute.Applicants, component: ApplicantsComponent, pathMatch: 'full' },
       { path: AppRoute.Projects, component: ProjectsListComponent, pathMatch: 'full' },
-      { path: AppRoute.Interviews, component: ProjectsListComponent, pathMatch: 'full' },
-      { path: AppRoute.Analytics, component: ProjectsListComponent, pathMatch: 'full' },
-      { path: AppRoute.TaskManagement, component: ProjectsListComponent, pathMatch: 'full' },
-      { path: AppRoute.Templates, component: ProjectsListComponent, pathMatch: 'full' },
+      { path: AppRoute.Interviews, component: VacanciesTableComponent, pathMatch: 'full' },
+      { path: AppRoute.Analytics, component: VacanciesTableComponent, pathMatch: 'full' },
+      { path: AppRoute.TaskManagement, component: VacanciesTableComponent, pathMatch: 'full' },
+      { path: AppRoute.Templates, component: VacanciesTableComponent, pathMatch: 'full' },
+      { path: AppRoute.Pools, component: ApplicationPoolComponent, pathMatch: 'full' },
+      { path: AppRoute.UserManagement, component: UsersTableComponent, canActivate:[HrLeadGuard],
+        pathMatch: 'full' },
       { path: '**', redirectTo: AppRoute.Home },
     ],
   },
@@ -39,7 +45,7 @@ const routes: Routes = [
     RouterModule.forRoot(routes),
     UserRoutingModule,
     VacanciesRoutingModule,
-    ProjectRoutingModule,
+    ProjectRoutingModule,    
   ],
   exports: [RouterModule],
 })

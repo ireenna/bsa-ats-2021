@@ -65,6 +65,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("LinkedInUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("MiddleName")
                         .HasColumnType("nvarchar(max)");
 
@@ -160,6 +163,27 @@ namespace Infrastructure.Migrations
                     b.ToTable("Companies");
                 });
 
+            modelBuilder.Entity("Domain.Entities.EmailToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("EmailToken");
+                });
+
             modelBuilder.Entity("Domain.Entities.Pool", b =>
                 {
                     b.Property<string>("Id")
@@ -169,8 +193,17 @@ namespace Infrastructure.Migrations
                     b.Property<string>("CompanyId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -578,6 +611,18 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Stage");
                 });
+
+            modelBuilder.Entity("Domain.Entities.EmailToken", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithOne("EmailToken")
+                        .HasForeignKey("Domain.Entities.EmailToken", "UserId")
+                        .HasConstraintName("email_token__user_FK")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Entities.Pool", b =>
                 {
                     b.HasOne("Domain.Entities.Company", "Company")

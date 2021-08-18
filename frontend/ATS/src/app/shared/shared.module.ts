@@ -31,7 +31,13 @@ import { MainContentComponent } from './components/main-content/main-content.com
 import { RouterModule } from '@angular/router';
 import { SpinnerComponent } from './components/spinner/spinner.component';
 import { StylePaginatorDirective } from './directives/style-paginator.directive';
-import {MatChipsModule} from '@angular/material/chips';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+
+
 
 @NgModule({
   exports: [
@@ -53,11 +59,11 @@ import {MatChipsModule} from '@angular/material/chips';
     BrowserAnimationsModule,
     HeaderComponent,
     MatListModule,
-    MatDialogModule,
     MatSelectModule,
     MultiselectComponent,
     MatDialogModule,
     MatDatepickerModule,
+    MatDialogModule,
     MatNativeDateModule,
     MatCheckboxModule,
     TopicComponent,
@@ -66,7 +72,11 @@ import {MatChipsModule} from '@angular/material/chips';
     MatProgressBarModule,
     SpinnerComponent,
     StylePaginatorDirective,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
     MatChipsModule,
+    MatAutocompleteModule,
   ],
   imports: [
     MatButtonModule,
@@ -83,8 +93,8 @@ import {MatChipsModule} from '@angular/material/chips';
     MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatProgressBarModule,
     MatDialogModule,
+    MatProgressBarModule,
     MatListModule,
     BrowserAnimationsModule,
     BrowserModule,
@@ -93,7 +103,11 @@ import {MatChipsModule} from '@angular/material/chips';
     ReactiveFormsModule,
     MatCheckboxModule,
     RouterModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
     MatChipsModule,
+    MatAutocompleteModule,
   ],
   providers: [HttpClientService],
   declarations: [
