@@ -41,7 +41,9 @@ namespace Application.Users.Commands
 
         public async Task<AuthUserDto> Handle(RegisterUserCommand command, CancellationToken _)
         {
-            var newUser = _mapper.Map<User>(command.RegisterUser);
+            Console.WriteLine(command.RegisterDto.UserRegisterDto.FirstName);
+            var newUser = _mapper.Map<User>(command.RegisterDto.UserRegisterDto);
+            Console.WriteLine(newUser.FirstName);
             newUser.CompanyId = "1"; // !IMPORTANT! delete in the future         
 
             newUser.IsEmailConfirmed = false;
