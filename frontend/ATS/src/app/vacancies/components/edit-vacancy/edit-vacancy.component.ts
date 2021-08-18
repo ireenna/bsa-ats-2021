@@ -15,6 +15,7 @@ import { Tag } from 'src/app/users/models/tag';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { StageComponent } from '../stages/stage/stage.component';
+import { VacancyData } from 'src/app/shared/models/vacancy/vacancy-data';
 
 @Component({
   selector: 'app-edit-vacancy',
@@ -63,7 +64,7 @@ export class EditVacancyComponent implements OnInit {
   
   constructor(
     public dialogRef: MatDialogRef<EditVacancyComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: {title: string, description:string},
+    @Inject(MAT_DIALOG_DATA) public data: {vacancyToEdit: VacancyData},
     private fb: FormBuilder,
     public projectService: ProjectService,
     public vacancyService:VacancyService) {
@@ -79,11 +80,31 @@ export class EditVacancyComponent implements OnInit {
       link:['', [Validators.required]],
       isHot:[''],
       isRemote:[''],
-      tags:[''],
+      tags:this.tags,
       stages:this.stageList
     }, {validator: this.customValidationFunction}
     );
-    
+    if(data.vacancyToEdit && this.vacancyForm){
+      this.vacancyService.getById(data.vacancyToEdit.id).subscribe(
+        response=>{
+          let vacancyToEdit:VacancyFull = response;
+          this.vacancyForm.get('title')?.setValue(vacancyToEdit.title);
+      this.vacancyForm.get('description')?.setValue(vacancyToEdit.description);
+      this.vacancyForm.get('requirements')?.setValue(vacancyToEdit.requirements);
+      this.vacancyForm.get('projectId')?.setValue(vacancyToEdit.projectId);
+      this.vacancyForm.get('salaryFrom')?.setValue(vacancyToEdit.salaryFrom);
+      this.vacancyForm.get('salaryTo')?.setValue(vacancyToEdit.salaryTo);
+      this.vacancyForm.get('tierFrom')?.setValue(vacancyToEdit.tierFrom);
+      this.vacancyForm.get('tierTo')?.setValue(vacancyToEdit.tierTo);
+      this.vacancyForm.get('link')?.setValue(vacancyToEdit.sources);
+      this.vacancyForm.get('isHot')?.setValue(vacancyToEdit.isHot);
+      this.vacancyForm.get('isRemote')?.setValue(vacancyToEdit.isRemote);
+      this.tags = vacancyToEdit.tags;
+      this.stageList = vacancyToEdit.stages;
+          this.selectedProjects = this.projects;
+        })
+      
+    }
   }
   // drop(event: CdkDragDrop<StageComponent[]>) {
   //   moveItemInArray(this.stageList, event.previousIndex, event.currentIndex);
@@ -278,13 +299,11 @@ export class EditVacancyComponent implements OnInit {
     return this.vacancyForm.controls;
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
-    if(changes.vacancy && this.vacancyForm){
-      this.vacancyForm.get('name')?.setValue(this.data.title);
-      this.vacancyForm.get('description')?.setValue(this.data.description);
-    }
-  }
+  // ngOnChanges(changes: SimpleChanges): void {
+  //   console.log(changes);
+    
+  //   }
+  // }
 
   // onDragStart(event:Event) {
   //   event

@@ -11,6 +11,10 @@ export class VacancyService {
 
   public constructor(private readonly http: HttpClientService) {}
 
+  public getById(id:string):Observable<VacancyFull>{
+    return this.http.getRequest<VacancyFull>('/vacancies/'+id);
+  }
+
   public postVacancy(vacancy:VacancyCreate): Observable<VacancyFull> {
     return this.http.postRequest<VacancyFull>(
       `/vacancies`,
