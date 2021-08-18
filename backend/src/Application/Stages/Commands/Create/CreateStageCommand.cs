@@ -53,13 +53,6 @@ namespace Application.Stages.Commands.Create
             {
                 throw new StageWithThisIndexAlreadyExist();
             }
-            if ((await _readRepository
-                .GetByVacancyAsync(command.StageCreate.VacancyId))
-                .Stages
-                .Any(x => x.Index == command.StageCreate.Type))
-            {
-                throw new StageWithThisTypeAlreadyExist();
-            }
             await _writeRepository.CreateAsync(newStage);
             var registeredStage = _mapper.Map<StageDto>(newStage);
 

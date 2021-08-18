@@ -60,6 +60,7 @@ namespace Application.Vacancies.Commands.Create
             newVacancy.CompanyId = user.CompanyId;
             newVacancy.ResponsibleHrId = user.Id;
             newVacancy.CreationDate = DateTime.UtcNow;
+            newVacancy.DateOfOpening = newVacancy.CreationDate; // Must be changed in future
             newVacancy.ModificationDate = DateTime.UtcNow;
 
 
