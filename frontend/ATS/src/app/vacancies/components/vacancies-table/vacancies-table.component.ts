@@ -10,12 +10,26 @@ import { VacancyData } from 'src/app/shared/models/vacancy/vacancy-data';
 import { VacancyDataService } from 'src/app/shared/services/vacancy-data.service';
 import { Router } from '@angular/router';
 import { EditVacancyComponent } from '../edit-vacancy/edit-vacancy.component';
+import { User } from 'src/app/users/models/user';
 
 ​
-const HRs: string[] = [
-  'Livia Baptista',
-  'Emery Culhain',
-  'Mira Workham',
+const HRs: User[] = [
+  {
+  firstName: "L",
+  lastName: "M",
+  birthDate: new Date,
+  creationDate: new Date,
+  email: "mail@gmail.com",
+  isEmailConfirmed: true
+  },
+  {
+    firstName: "I",
+    lastName: "K",
+    birthDate: new Date,
+    creationDate: new Date,
+    email:"email@gmail.com",
+    isEmailConfirmed: true
+    }
 ];
 const NAMES: string[] = [
   'Interface Designer', 'Software Enginner', 'Project Manager', 'Developer', 'QA',
@@ -49,22 +63,22 @@ export class VacanciesTableComponent implements AfterViewInit {
   private randomCurrentApplicantsAmounts: number[] = [130, 34, 56, 34];
   constructor(private router:Router, private cd: ChangeDetectorRef,
     private dialog: MatDialog, private service: VacancyDataService) {
-    // const vacancies =  Array.from({ length: 99 }, (_, k) => createNewVacancy());
-    service.getList().subscribe(data=>{
-      data.forEach(d=>{
-        d.requiredCandidatesAmount = this.randomRequiredCandidatesAmounts[
-          Math.round(Math.random() * (this.randomRequiredCandidatesAmounts.length - 1))
-        ];
-        d.currentApplicantsAmount = this.randomCurrentApplicantsAmounts[
-          Math.round(Math.random() * (this.randomCurrentApplicantsAmounts.length - 1))
-        ];
-      });
+    const data =  Array.from({ length: 99 }, (_, k) => createNewVacancy());
+    // service.getList().subscribe(data=>{
+    //   data.forEach(d=>{
+    //     d.requiredCandidatesAmount = this.randomRequiredCandidatesAmounts[
+    //       Math.round(Math.random() * (this.randomRequiredCandidatesAmounts.length - 1))
+    //     ];
+    //     d.currentApplicantsAmount = this.randomCurrentApplicantsAmounts[
+    //       Math.round(Math.random() * (this.randomCurrentApplicantsAmounts.length - 1))
+    //     ];
+    //   });
+    this.dataSource = new MatTableDataSource<VacancyData>();
       this.dataSource.data = data;
       this.directive.applyFilter$.emit();
-    },
-    );
+    // },
+    // );
     // Assign the data to the data source for the table to render
-    this.dataSource = new MatTableDataSource<VacancyData>();
   }
   openDialog(): void {
     const dialogRef = this.dialog.open(EditVacancyComponent, {
@@ -109,20 +123,20 @@ export class VacanciesTableComponent implements AfterViewInit {
     }
   }
 ​
-  ​ 
+ 
 }
 ​
 /** Builds and returns a new User. */
-// function createNewVacancy(): VacancyData {
-//   const name = NAMES[Math.round(Math.random() * (NAMES.length - 1))];
-// ​
-//   return {
-//     title: name,
-//     requiredCandidatesAmount: Math.round(Math.random()*4+1),
-//     currentApplicantsAmount: Math.round(Math.random()*10 +1),
-//     responsible: HRs[Math.round(Math.random() * (HRs.length - 1))],
-//     department: 'Lorem ipsum dorot sit',
-//     creationDate: new Date(),
-//     status: STATUES[Math.round(Math.random()*(STATUES.length - 1))],
-//   };
-// }
+function createNewVacancy(): VacancyData {
+  const name = NAMES[Math.round(Math.random() * (NAMES.length - 1))];
+​
+  return {
+    title: name,
+    requiredCandidatesAmount: Math.round(Math.random()*4+1),
+    currentApplicantsAmount: Math.round(Math.random()*10 +1),
+    responsibleHr: HRs[Math.round(Math.random() * (HRs.length - 1))],
+    department: 'Lorem ipsum dorot sit',
+    creationDate: new Date(),
+    status: STATUES[Math.round(Math.random()*(STATUES.length - 1))],
+  };
+}

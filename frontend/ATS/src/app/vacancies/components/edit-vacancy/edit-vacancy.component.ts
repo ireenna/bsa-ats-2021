@@ -2,9 +2,6 @@ import {Component,EventEmitter,Inject,OnChanges,OnInit,Output,SimpleChanges} fro
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import { MatSelect } from '@angular/material/select';
-import { ReplaySubject, Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
 import { Project } from 'src/app/shared/models/projects/project';
 import { Stage } from 'src/app/shared/models/stages/stage';
 import { VacancyCreate } from 'src/app/shared/models/vacancy/vacancy-create';
@@ -13,8 +10,7 @@ import { ProjectService } from 'src/app/shared/services/project.service';
 import { VacancyService } from 'src/app/shared/services/vacancy.service';
 import { Tag } from 'src/app/users/models/tag';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { StageComponent } from '../stages/stage/stage.component';
+import { CdkDragDrop} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-edit-vacancy',
@@ -102,7 +98,8 @@ export class EditVacancyComponent implements OnInit, OnChanges {
       sources:this.vacancyForm.controls['link'].value,
       isHot:this.vacancyForm.controls['isHot'].value ? true : false,
       isRemote:this.vacancyForm.controls['isRemote'].value ? true : false,
-      stages: [],
+      tags: this.tags,
+      stages: this.stageList
     };
 
     this.vacancyService.postVacancy(this.vacancy)

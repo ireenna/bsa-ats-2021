@@ -1,3 +1,4 @@
+import { Tag } from 'src/app/users/models/tag';
 import { Stage } from '../stages/stage';
 
 export interface VacancyCreate{
@@ -12,5 +13,6 @@ export interface VacancyCreate{
   sources:string,
   isHot:boolean,
   isRemote:boolean,
+  tags: Tag[], //Elastic Entity???
   stages:Stage[]
 }
