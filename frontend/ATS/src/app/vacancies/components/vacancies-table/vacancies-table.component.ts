@@ -16,12 +16,21 @@ import { VacancyCreate } from 'src/app/shared/models/vacancy/vacancy-create';
 ​
 const HRs: User[] = [
   {
-    firstName: 'M',
-    lastName: 'R',
-    middleName: 'string',
+    firstName: 'L',
+    lastName: 'M',
     birthDate: new Date,
-    email: "string@gmail.com"
-  }
+    creationDate: new Date,
+    email: 'mail@gmail.com',
+    isEmailConfirmed: true,
+  },
+  {
+    firstName: 'I',
+    lastName: 'K',
+    birthDate: new Date,
+    creationDate: new Date,
+    email:'email@gmail.com',
+    isEmailConfirmed: true,
+  },
 ];
 const NAMES: string[] = [
   'Interface Designer', 'Software Enginner', 'Project Manager', 'Developer', 'QA',
@@ -55,21 +64,22 @@ export class VacanciesTableComponent implements AfterViewInit {
   private randomCurrentApplicantsAmounts: number[] = [130, 34, 56, 34];
   constructor(private router:Router, private cd: ChangeDetectorRef,
     private dialog: MatDialog, private service: VacancyDataService) {
-    const data =  Array.from({ length: 99 }, (_, k) => createNewVacancy());
-    // service.getList().subscribe(data=>{
-    //   data.forEach(d=>{
-    //     d.requiredCandidatesAmount = this.randomRequiredCandidatesAmounts[
-    //       Math.round(Math.random() * (this.randomRequiredCandidatesAmounts.length - 1))
-    //     ];
-    //     d.currentApplicantsAmount = this.randomCurrentApplicantsAmounts[
-    //       Math.round(Math.random() * (this.randomCurrentApplicantsAmounts.length - 1))
-    //     ];
-    //   });
-    this.dataSource = new MatTableDataSource<VacancyData>();
+    // const data =  Array.from({ length: 99 }, (_, k) => createNewVacancy());
+    service.getList().subscribe(data=>{
+      data.forEach(d=>{
+        d.requiredCandidatesAmount = this.randomRequiredCandidatesAmounts[
+          Math.round(Math.random() * (this.randomRequiredCandidatesAmounts.length - 1))
+        ];
+        d.currentApplicantsAmount = this.randomCurrentApplicantsAmounts[
+          Math.round(Math.random() * (this.randomCurrentApplicantsAmounts.length - 1))
+        ];
+      });
       this.dataSource.data = data;
-      // this.directive.applyFilter$.emit();
-    // },
-    // );
+      this.directive.applyFilter$.emit();
+    },
+    );
+    this.dataSource = new MatTableDataSource<VacancyData>();
+
     // Assign the data to the data source for the table to render
   }
 
@@ -81,20 +91,20 @@ export class VacanciesTableComponent implements AfterViewInit {
     const dialogRef = this.dialog.open(EditVacancyComponent, {
       width: '914px',
       height: 'auto',
-      data: {}
+      data: {},
     });
 
     this.dialog.afterAllClosed.subscribe(_ =>
-        this.getVacancies());
+      this.getVacancies());
     
   }
   
-    onEdit(vacancyEdit: VacancyCreate): void {
-      this.dialog.open(EditVacancyComponent, {
-        data: {
-          vacancyToEdit: vacancyEdit,
-        },
-      });
+  onEdit(vacancyEdit: VacancyCreate): void {
+    this.dialog.open(EditVacancyComponent, {
+      data: {
+        vacancyToEdit: vacancyEdit,
+      },
+    });
   }
 
   public getStatus(index:number): string{
@@ -127,23 +137,23 @@ export class VacanciesTableComponent implements AfterViewInit {
     }
   }
 ​
-  ​ saveVacancy(changedVacancy: VacancyData){
+  saveVacancy(changedVacancy: VacancyData){
     this.dataSource.data.unshift(changedVacancy);
   }
 }
 ​
 /** Builds and returns a new User. */
-function createNewVacancy(): VacancyData {
-  const name = NAMES[Math.round(Math.random() * (NAMES.length - 1))];
-​let i = 0;
-  return {
-    id: (i++).toString(),
-    title: name,
-    requiredCandidatesAmount: Math.round(Math.random()*4+1),
-    currentApplicantsAmount: Math.round(Math.random()*10 +1),
-    responsibleHr: HRs[Math.round(Math.random() * (HRs.length - 1))],
-    department: 'Lorem ipsum dorot sit',
-    creationDate: new Date(),
-    status: STATUES[Math.round(Math.random()*(STATUES.length - 1))],
-  };
-}
+// function createNewVacancy(): VacancyData {
+//   const name = NAMES[Math.round(Math.random() * (NAMES.length - 1))];
+// ​let i = 0;
+//   return {
+//     id: (i++).toString(),
+//     title: name,
+//     requiredCandidatesAmount: Math.round(Math.random()*4+1),
+//     currentApplicantsAmount: Math.round(Math.random()*10 +1),
+//     responsibleHr: HRs[Math.round(Math.random() * (HRs.length - 1))],
+//     department: 'Lorem ipsum dorot sit',
+//     creationDate: new Date(),
+//     status: STATUES[Math.round(Math.random()*(STATUES.length - 1))],
+//   };
+// }

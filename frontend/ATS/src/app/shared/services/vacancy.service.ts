@@ -5,7 +5,7 @@ import { VacancyFull } from '../models/vacancy/vacancy-full';
 import { HttpClientService } from './http-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class VacancyService {
 
@@ -17,8 +17,8 @@ export class VacancyService {
 
   public postVacancy(vacancy:VacancyCreate): Observable<VacancyFull> {
     return this.http.postRequest<VacancyFull>(
-      `/vacancies`,
-      vacancy
+      '/vacancies',
+      vacancy,
     );
   }
 }

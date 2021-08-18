@@ -4,7 +4,7 @@ import { Project } from '../models/projects/project';
 import { HttpClientService } from './http-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProjectService {
 
@@ -12,7 +12,7 @@ export class ProjectService {
 
   public getByCompany(): Observable<Project[]> {
     return this.http.getRequest<Project[]>(
-      `/users/current/company/projects`,
+      '/users/current/company/projects',
     );
   }
 }
