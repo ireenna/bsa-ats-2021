@@ -68,7 +68,7 @@
                     </div>
                 <mat-form-field appearance="fill" [ngClass]="(vacancyFormControl.salaryTo.touched || submitted) && (vacancyFormControl.salaryTo.invalid || vacancyForm.errors?.salaryRangeIsWrong) ? 'invalid-input' : ''">
                     <input matInput type="text" autocomplete="off" formControlName="salaryTo" placeholder="to">
-                     <mat-error *ngIf="(vacancyFormControl.salaryTo.touched || submitted) && this.vacancyForm.errors?.salaryRangeIsWrong">
+                     <mat-error *ngIf="(vacancyFormControl.salaryTo.touched || submitted) && vacancyFormControl.salaryTo.errors?.salaryRangeIsWrong">
                         The first value of salary should be less
                     </mat-error>
                     <mat-error *ngIf="(vacancyFormControl.salaryTo.touched || submitted) && vacancyFormControl.salaryTo.errors?.required">
@@ -115,6 +115,9 @@
                     <mat-error *ngIf="(vacancyFormControl.tierTo.touched || submitted) && vacancyFormControl.tierTo.errors?.required">
                         This field is required
                     </mat-error>
+                    <mat-error *ngIf="(vacancyFormControl.tierTo.touched || submitted) && vacancyFormControl.tierTo.errors?.is">
+                        This field is required
+                    </mat-error>
                     </mat-form-field>
                 </div>
             </div>
@@ -126,26 +129,66 @@
                     This field shouldn't be empty
                 </mat-error>
         </mat-form-field>
-        <!-- <mat-label>Tags</mat-label>
+            <mat-label>Tags</mat-label>
         <mat-form-field appearance="fill">
-            <input matInput type="text" autocomplete="off" formControlName="title" placeholder="Enter tags">
-        </mat-form-field> -->
+            <mat-chip-list #chipList >
+              <mat-chip *ngFor="let tag of tags" [selectable]="selectable"
+                       [removable]="removable" (removed)="remove(tag)">
+                {{tag.name}}
+                <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+              </mat-chip>
+              <input autocomplete="off" formControlName="tags" placeholder="Enter tags"
+                     [matChipInputFor]="chipList"
+                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                     [matChipInputAddOnBlur]="addOnBlur"
+                     (matChipInputTokenEnd)="add($event)">
+            </mat-chip-list>
+          </mat-form-field>
         <div class="checkboxes">
             <mat-checkbox formControlName="isHot">Hot vacancy</mat-checkbox>
             <mat-checkbox formControlName="isRemote">Is remote</mat-checkbox>
         </div>
         <div class="workflow-container">
             <h2><b>Workflow</b></h2>
-            <div class="stage-list" >
-            <div *ngFor="let _stage of stageList" >
-                <app-stage [stage]=_stage (isDeletedStage)="onDeleteStage($event)" draggable='true'></app-stage>
-            </div>
-            <button mat-stroked-button class="add-stage-button" (click)="displayCreateStage()">+ Add new stage</button>
-            </div>
+            <!-- <div class="stage-list" > -->
+            <!-- <div *ngFor="let _stage of stageList"  >
+                <app-stage [stage]=_stage (isDeletedStage)="onDeleteStage($event)" (isEditStage)="onEditStage($event)"></app-stage>
+            </div> -->
+            <!-- <div cdkDropList cdkDropListOrientation="horizontal" class="example-list" (cdkDropListDropped)="drop($event)">
+                <div class="example-box" *ngFor="let _stage of stageList" cdkDrag>
+                    <app-stage [stage]=_stage (isDeletedStage)="onDeleteStage($event)" (isEditStage)="onEditStage($event)"></app-stage>
+                </div> -->
+                <div #contenedor class="example-list"  cdkDropListGroup>
+                    <ng-container *ngFor="let _stage of sortStageList();let i=index">
+                        <div class="example-box" cdkDropList 
+                    cdkDropListOrientation="horizontal"
+                    [cdkDropListData]="{item:_stage,index:i}" (cdkDropListDropped)="dropp($event)" >
+                            <div cdkDrag>
+                        <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                        <app-stage [stage]=_stage (isDeletedStage)="onDeleteStage($event)" (isEditStage)="onEditStage($event)"></app-stage>
+                        </div>
+                        </div>
+                    </ng-container>
+            <button mat-stroked-button class="add-stage-button" *ngIf="!this.isOpenCreateStage" (click)="displayCreateStage()">+ Add new stage</button>
+
+                </div>
+                <!-- {{stageList|json}} -->
+            <!-- <div cdkDropList cdkDropListOrientation="horizontal" class="example-list" (cdkDropListDropped)="drop($event)">
+                <div class="example-box" *ngFor="let _stage of stageList" cdkDrag>
+                    <app-stage [stage]=_stage (isDeletedStage)="onDeleteStage($event)" (isEditStage)="onEditStage($event)"></app-stage>
+                </div> -->
+            
+            <!-- <button mat-stroked-button class="add-stage-button" *ngIf="!this.isOpenCreateStage" (click)="displayCreateStage()">+ Add new stage</button> -->
+            <!-- </div> -->
+            <!-- </div> -->
             <div *ngIf="this.isOpenCreateStage">
-                <app-create-stage (stageChange)="saveStage($event)" (stageCreateAndAddChange)="saveStageAndAdd($event)" (isClosedChange)="displayCreateStage()"></app-create-stage>
+                <app-create-stage [stage]=this.stageToEdit (stageChange)="saveStage($event)" (stageCreateAndAddChange)="saveStageAndAdd($event)" (isClosedChange)="cancelStageEdit()"></app-create-stage>
             </div>
         </div>
             <button mat-button type="submit" style="margin-bottom:50px"[disabled]="vacancyForm.invalid">Publish</button>
     </form>
+     
 </div>
+  
+ 
+  

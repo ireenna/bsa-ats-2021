@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Inject, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import { MatSelect } from '@angular/material/select';
 import { ReplaySubject, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
@@ -10,6 +11,10 @@ import { VacancyCreate } from 'src/app/shared/models/vacancy/vacancy-create';
 import { VacancyFull } from 'src/app/shared/models/vacancy/vacancy-full';
 import { ProjectService } from 'src/app/shared/services/project.service';
 import { VacancyService } from 'src/app/shared/services/vacancy.service';
+import { Tag } from 'src/app/users/models/tag';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { StageComponent } from '../stages/stage/stage.component';
 
 @Component({
   selector: 'app-edit-vacancy',
@@ -24,6 +29,37 @@ export class EditVacancyComponent implements OnInit {
   selectedProjects:Project[] = []; 
   vacancy:VacancyCreate = {} as VacancyCreate;
   @Output() vacancyChange = new EventEmitter<VacancyFull>();
+  stageToEdit:Stage = {} as Stage;
+  isEditStageMode:Boolean = false;
+  selectable = true;
+  removable = true;
+  addOnBlur = true;
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  tags: Tag[] = [
+    {name: 'Devops'},
+    {name: 'Ukraine'},
+    {name: 'Job offer'},
+  ];
+
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    // Add our fruit
+    if (value) {
+      this.tags.push({name: value});
+    }
+
+    // Clear the input value
+    event.chipInput!.clear();
+  }
+
+  remove(tag: Tag): void {
+    const index = this.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.tags.splice(index, 1);
+    }
+  }
   
   constructor(
     public dialogRef: MatDialogRef<EditVacancyComponent>,
@@ -43,46 +79,116 @@ export class EditVacancyComponent implements OnInit {
       link:['', [Validators.required]],
       isHot:[''],
       isRemote:[''],
+      tags:[''],
       stages:this.stageList
     }, {validator: this.customValidationFunction}
     );
     
   }
+  // drop(event: CdkDragDrop<StageComponent[]>) {
+  //   moveItemInArray(this.stageList, event.previousIndex, event.currentIndex);
+  // }
+  
+  // tslint:enable:max-line-length
+
+  drop(event: CdkDragDrop<Stage[]>) {
+    moveItemInArray(this.stageList, event.previousIndex, event.currentIndex);
+  }
 
   ngOnInit(){
     this.projectService.getByCompany().subscribe(
       response=>{
-        console.log(response)
         this.projects = response;
-        this.selectedProjects = this.projects; 
-        console.log(this.projects)
+        this.selectedProjects = this.projects;
       })
   }
 
   stageList:Stage[]=[
     {
+      id:"aaaa",
       name: "Test",
-      index:1,
-      isReviewable:true,
+      index:2,
+      action:"Prepare questions for interview",
+      rates:"English",
+      isReviewRequired:true,
       vacancyId:"1"
     },
     {
+      id:"bbbb",
       name: "Interview",
-      index:2,
-      isReviewable:true,
+      index:1,
+      action:"Prepare questions for interview",
+      rates:"English",
+      isReviewRequired:true,
       vacancyId:"2"
     },
-    {
+    {id:"ccccc",
       name: "Technical test",
       index:3,
-      isReviewable:true,
+      action:"Prepare questions for interview",
+      rates:"English",
+      isReviewRequired:true,
       vacancyId:"1"
+    },
+    {
+      id:"bbbb",
+      name: "Interview",
+      index:4,
+      action:"Prepare questions for interview",
+      rates:"English",
+      isReviewRequired:true,
+      vacancyId:"2"
+    },
+    {id:"ddddd",
+      name: "5",
+      index:5,
+      action:"Prepare questions for interview",
+      rates:"English",
+      isReviewRequired:true,
+      vacancyId:"1"
+    },
+    {
+      id:"bbbb",
+      name: "Interview",
+      index:6,
+      action:"Prepare questions for interview",
+      rates:"English",
+      isReviewRequired:true,
+      vacancyId:"2"
     }
   ]
+
+  onEditStage(stageToEdit: Stage){
+    this.stageToEdit = stageToEdit;
+    this.isOpenCreateStage = true;
+    this.isEditStageMode = true;
+  }
+
+  sortStageList(){
+    // this.stageList.sort((a,b)=>{
+    //   if(a.index>b.index)
+    //     return 1
+    //   if(a.index<b.index)
+    //     return -1
+    //   return 0;
+    // });
+    let index = 1;
+    this.stageList.forEach(x=>{
+      x.index = index;
+      index++;
+    })
+    console.log(this.stageList)
+    return this.stageList;
+  }
+
   customValidationFunction(formGroup: FormGroup): any {
     let salaryFrom = formGroup.controls['salaryFrom'].value;
     let salaryTo = formGroup.controls['salaryTo'].value;
-    return (parseInt(salaryFrom,10) > parseInt(salaryTo,10) ? { salaryRangeIsWrong: true } : null);
+    let error = (parseInt(salaryFrom,10) > parseInt(salaryTo,10));
+    if(error){
+      formGroup.controls['salaryTo'].setErrors({ salaryRangeIsWrong: true });
+      console.log(this.vacancyForm);
+    }
  }
 
  isTierFromLessTierTo(tierTo:Number):Boolean{
@@ -101,9 +207,6 @@ export class EditVacancyComponent implements OnInit {
   }
 
   createVacancy(){
-    console.log(this.vacancyForm);
-    console.log(this.vacancyForm.value);
-    console.log(this.vacancyForm.errors?.salaryRangeIsWrong);
     this.submitted = true;
     this.vacancy = {
       title:this.vacancyForm.controls['title'].value,
@@ -133,17 +236,32 @@ export class EditVacancyComponent implements OnInit {
     return this.vacancyForm.controls;
   }
 
+  toSave(newStage:Stage){
+    if(this.isEditStageMode){
+      let stageIndex = this.stageList.find(x=>x.index === newStage.index)?.index;
+      if(stageIndex){
+        this.stageList[stageIndex-1] = newStage;
+      }
+      this.isEditStageMode = false;
+    }else{
+      newStage.index = this.stageList.length + 1;
+      this.stageList.push(newStage);
+    }
+    this.stageToEdit = {} as Stage;
+  }
+
   saveStage(newStage:Stage){
-    newStage.index = this.stageList.length + 1;
-    this.stageList.push(newStage);
-    console.log(this.stageList);
-    this.displayCreateStage();
+    this.toSave(newStage);
+      this.displayCreateStage();
+  }
+
+  cancelStageEdit(){
+  this.stageToEdit = {} as Stage;
+  this.displayCreateStage();
   }
 
   saveStageAndAdd(newStage:Stage){
-    newStage.index = this.stageList.length + 1;
-    this.stageList.push(newStage);
-    console.log(this.stageList)
+   this.toSave(newStage)
   }
 
   onDeleteStage(selectedStage:Stage){
@@ -168,6 +286,17 @@ export class EditVacancyComponent implements OnInit {
     }
   }
 
+  // onDragStart(event:Event) {
+  //   event
+  //     .dataTransfer
+  //     .setData('text/plain', event.target.id);
+   
+  //   event
+  //     .currentTarget
+  //     .style
+  //     .backgroundColor = 'yellow';
+  // }
+
 onKey(event:Event) { 
   this.selectedProjects = this.search((<HTMLInputElement>event.target).value);
 }
@@ -177,4 +306,12 @@ search(value: string) {
   let filter = value.toLowerCase();
   return this.projects.filter(option => option.name.toLowerCase().startsWith(filter));
 }
+
+// items=[0,1,2,3,4,5,6,7,8,9,10,11]
+  // option="25rem"
+  dropp(event: CdkDragDrop<any>) {
+    this.stageList[event.previousContainer.data.index]=event.container.data.item
+    this.stageList[event.container.data.index]=event.previousContainer.data.item
+  }
 }
+

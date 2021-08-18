@@ -11,12 +11,17 @@ export class StageComponent implements OnInit {
   constructor() { }
   @Input() stage: Stage = {} as Stage;
   @Output() isDeletedStage = new EventEmitter<Stage>();
+  @Output() isEditStage = new EventEmitter<Stage>();
 
   ngOnInit(): void {
   }
 
   deleteStage(){
     this.isDeletedStage.emit(this.stage);
+  }
+
+  editStage(){
+    this.isEditStage.emit(this.stage);
   }
 
 }

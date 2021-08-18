@@ -1,5 +1,8 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Component, EventEmitter, Input, OnChanges,  OnDestroy,  OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { drop } from 'lodash';
+import { Subject } from 'rxjs';
 import { Stage } from 'src/app/shared/models/stages/stage';
 
 @Component({
@@ -7,13 +10,14 @@ import { Stage } from 'src/app/shared/models/stages/stage';
   templateUrl: './create-stage.component.html',
   styleUrls: ['./create-stage.component.scss']
 })
-export class CreateStageComponent implements OnInit {
+export class CreateStageComponent implements OnInit, OnChanges {
 
   submitted:Boolean = false;
+  editModeItemIndex:number=-1;
   @Output() stageChange = new EventEmitter<Stage>();
   @Output() stageCreateAndAddChange = new EventEmitter<Stage>();
   @Output() isClosedChange = new EventEmitter<Boolean>();
-  stage:Stage = {} as Stage;
+  @Input() stage:Stage = {} as Stage;
   
   constructor(private fb: FormBuilder) {
     this.stageForm = this.fb.group({
@@ -25,23 +29,48 @@ export class CreateStageComponent implements OnInit {
     );
   }
 
+ngOnChanges(changes: SimpleChanges){
+  if(changes.stage && this.stageForm){
+    this.stageForm.get('name')?.setValue(changes.stage.currentValue.name)
+    this.stageForm.get('action')?.setValue(changes.stage.currentValue.action)
+    this.stageForm.get('isReviewRequired')?.setValue(changes.stage.currentValue.isReviewRequired)
+    this.stageForm.get('rates')?.setValue(changes.stage.currentValue.rates)
+    this.editModeItemIndex = changes.stage.currentValue.index;
+  }
+}
+
+save(){
+  this.submitted = true;
+      this.stage = this.stageForm.value;
+      this.stage.index = this.editModeItemIndex;
+      // this.stage = {} as Stage;
+    this.stageForm.reset();
+}
+
   onStageSave(){
     this.submitted = true;
-    // if(this.stageForm.valid){
       this.stage = this.stageForm.value;
+      this.stage.index = this.editModeItemIndex;
+    this.stageForm.reset();
       this.stageChange.emit(this.stage);
-    // }
-      
+      this.stage = {} as Stage;
   }
   onSaveAndAdd(){
-    this.stage = this.stageForm.value;
-    this.stageCreateAndAddChange.emit(this.stage);
+    this.submitted = true;
+      this.stage = this.stageForm.value;
+      this.stage.index = this.editModeItemIndex;
+      
     this.stageForm.reset();
+    this.stageCreateAndAddChange.emit(this.stage);
+    
+    this.stage = {} as Stage;
   }
 
   onStageClose(){
     this.submitted = false;
+    this.stageForm.reset();
     this.isClosedChange.emit(true);
+    this.stage = {} as Stage;
   }
 
   get stageFormControl() {
