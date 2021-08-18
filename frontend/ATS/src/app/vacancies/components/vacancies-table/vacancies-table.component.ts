@@ -70,7 +70,7 @@ export class VacanciesTableComponent implements AfterViewInit {
     const dialogRef = this.dialog.open(EditVacancyComponent, {
       width: '914px',
       height: 'auto',
-      data: {title: 'nameee', description:'desc'}
+      data: {title: 'nameee', description:'desc'},
     });
 
     dialogRef.afterClosed().subscribe(() => {

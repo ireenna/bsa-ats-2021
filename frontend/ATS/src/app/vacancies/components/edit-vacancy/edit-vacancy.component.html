@@ -1,7 +1,7 @@
 <div class="modal-container" >
 <div class="modal-top">
     <h1 mat-dialog-title><b>Vacancy creation form</b></h1>
-    <button mat-icon-button aria-label="Close" (click)="onNoClick()">
+    <button mat-icon-button aria-label="Close" (click)="this.dialogRef.close()">
     <mat-icon>close</mat-icon>
 </button>
 </div>
@@ -150,19 +150,11 @@
         </div>
         <div class="workflow-container">
             <h2><b>Workflow</b></h2>
-            <!-- <div class="stage-list" > -->
-            <!-- <div *ngFor="let _stage of stageList"  >
-                <app-stage [stage]=_stage (isDeletedStage)="onDeleteStage($event)" (isEditStage)="onEditStage($event)"></app-stage>
-            </div> -->
-            <!-- <div cdkDropList cdkDropListOrientation="horizontal" class="example-list" (cdkDropListDropped)="drop($event)">
-                <div class="example-box" *ngFor="let _stage of stageList" cdkDrag>
-                    <app-stage [stage]=_stage (isDeletedStage)="onDeleteStage($event)" (isEditStage)="onEditStage($event)"></app-stage>
-                </div> -->
                 <div #contenedor class="example-list"  cdkDropListGroup>
                     <ng-container *ngFor="let _stage of sortStageList();let i=index">
                         <div class="example-box" cdkDropList 
                     cdkDropListOrientation="horizontal"
-                    [cdkDropListData]="{item:_stage,index:i}" (cdkDropListDropped)="dropp($event)" >
+                    [cdkDropListData]="{item:_stage,index:i}" (cdkDropListDropped)="dropStage($event)" >
                             <div cdkDrag>
                         <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
                         <app-stage [stage]=_stage (isDeletedStage)="onDeleteStage($event)" (isEditStage)="onEditStage($event)"></app-stage>
@@ -172,22 +164,12 @@
             <button mat-stroked-button class="add-stage-button" *ngIf="!this.isOpenCreateStage" (click)="displayCreateStage()">+ Add new stage</button>
 
                 </div>
-                <!-- {{stageList|json}} -->
-            <!-- <div cdkDropList cdkDropListOrientation="horizontal" class="example-list" (cdkDropListDropped)="drop($event)">
-                <div class="example-box" *ngFor="let _stage of stageList" cdkDrag>
-                    <app-stage [stage]=_stage (isDeletedStage)="onDeleteStage($event)" (isEditStage)="onEditStage($event)"></app-stage>
-                </div> -->
-            
-            <!-- <button mat-stroked-button class="add-stage-button" *ngIf="!this.isOpenCreateStage" (click)="displayCreateStage()">+ Add new stage</button> -->
-            <!-- </div> -->
-            <!-- </div> -->
             <div *ngIf="this.isOpenCreateStage">
                 <app-create-stage [stage]=this.stageToEdit (stageChange)="saveStage($event)" (stageCreateAndAddChange)="saveStageAndAdd($event)" (isClosedChange)="cancelStageEdit()"></app-create-stage>
             </div>
         </div>
             <button mat-button type="submit" style="margin-bottom:50px"[disabled]="vacancyForm.invalid">Publish</button>
     </form>
-     
 </div>
   
  

@@ -11,7 +11,6 @@
             <mat-label>Action</mat-label>
         <mat-form-field appearance="fill" [ngClass]="(stageFormControl.action.touched || submitted) && stageFormControl.action.invalid ? 'invalid-input' : ''">
             <mat-select #fontSize placeholder="Select action" formControlName="action">
-                <!-- (selectionChange)="" -->
                 <mat-option >None</mat-option>
               <mat-option value="Add task">Add task</mat-option>
               <mat-option value="Prepare questions for interview">Prepare questions for interview</mat-option>
@@ -25,7 +24,6 @@
           <mat-label>Rates</mat-label>
           <mat-form-field appearance="fill" [ngClass]="(stageFormControl.rates.touched || submitted) && stageFormControl.rates.invalid ? 'invalid-input' : ''">
             <mat-select #fontSize placeholder="Select rates" formControlName="rates">
-                <!-- (selectionChange)="" -->
                 <mat-option >None</mat-option>
               <mat-option value="Communicative skills">Communicative skills</mat-option>
               <mat-option value="English">English</mat-option>

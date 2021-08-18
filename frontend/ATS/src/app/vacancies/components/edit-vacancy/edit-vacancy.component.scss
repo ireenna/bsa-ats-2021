@@ -24,7 +24,6 @@
     width: 100%;
     box-sizing: border-box;
     height:auto;
-    // max-height: calc(100vh - 210px);
 }
 
 .checkboxes{
@@ -46,27 +45,27 @@
     grid-gap:20px;
     justify-content: space-between;
 }
+
 .search-input{
     height:40px;
     padding: 0px 15px;
 }
+
 .range-rows{
     display:grid;
     grid-template-columns: 45% 10% 45%;
     justify-content: space-between;
 }
+
 .center{
     justify-self: center;
 }
+
 .stage-list{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-gap:20px;
 }
-
-// .mat-form-field{
-//     margin-bottom: 20px;
-// }
 
 .mat-label{
     margin-top: 15px;
@@ -85,41 +84,50 @@
     border-radius:10px;
 }
 
-
-:host ::ng-deep .invalid-input .mat-form-field-flex {
-        border: 2.5px solid #EE2A64 !important;
-}
-// .modal{
-//     overflow: auto;
-// }
-
-:host ::ng-deep .mat-form-field-wrapper.mat-form-field-wrapper {
-    min-width: unset;
-    max-width: none;
+.example-list {
     width: 100%;
-    height: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap:20px;
+  }
+  
+  .example-box {
     box-sizing: border-box;
-    background-color: unset;
-    padding: 0px 0px 20px 0px;
-}
-
-
-/* width */
-:host ::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
-    opacity: 0.03 !important;
-    background-color: #EE2A64!important;
+    cursor: move;
+  }
+  
+  .cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 20px;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  }
+  
+  .cdk-drag-placeholder {
+    opacity: 0;
+  }
+  
+  .cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+  
+  .example-box:last-child {
+    border: none;
+  }
+  
+  .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
 
-  :host ::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-background,.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
-    background-color: #EE2A64;
+  .cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
-
   .mat-input-element{
     color: black;
     background-color:#F0F3F9;
 }
 
-////////////////////////////
 $primary-font : Nunito;
 $primary-color: #291965;
 
@@ -183,6 +191,29 @@ $primary-color: #291965;
 }
 
 :host ::ng-deep {
+    .invalid-input .mat-form-field-flex {
+        border: 2.5px solid #EE2A64 !important;
+}
+
+.mat-form-field-wrapper.mat-form-field-wrapper {
+    min-width: unset;
+    max-width: none;
+    width: 100%;
+    height: auto;
+    box-sizing: border-box;
+    background-color: unset;
+    padding: 0px 0px 20px 0px;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
+    opacity: 0.03 !important;
+    background-color: #EE2A64!important;
+  }
+
+  .mat-checkbox-checked.mat-accent .mat-checkbox-background,.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+    background-color: #EE2A64;
+  }
+
     .mat-form-field-appearance-fill .mat-form-field-flex {
         background: #F0F3F9;
         padding: 5px 20px !important;
@@ -191,16 +222,20 @@ $primary-color: #291965;
         min-height: 40px;
         align-items: center;
     }
+
     .mat-error{
         color:#EE2A64
     }
+
     .mat-form-field-subscript-wrapper{
         font-size: 90%;
         padding: 0;
     }
+
     .mat-form-field-appearance-fill .mat-select-arrow-wrapper{
         padding-top:15px
     }
+
     .mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon-button,
     .mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon-button {
         display: inline-flex;
@@ -213,57 +248,19 @@ $primary-color: #291965;
     .mat-form-field-appearance-legacy .mat-form-field-prefix .mat-datepicker-toggle-default-icon, .mat-form-field-appearance-legacy .mat-form-field-suffix .mat-datepicker-toggle-default-icon{
         width: 17px;
     }
+
     .mat-form-field-appearance-legacy .mat-form-field-prefix .mat-icon-button, .mat-form-field-appearance-legacy .mat-form-field-suffix .mat-icon-button{
         display: flex;
         align-items: center;
     }
+
     .mat-standard-chip.mat-chip-with-trailing-icon{
     background: #ee2a64;
         color:white;
     }
+
     .mat-standard-chip .mat-chip-remove.mat-icon{
         color:white
     }
 }
 
-.example-list {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-gap:20px;
-  }
-  
-  .example-box {
-    box-sizing: border-box;
-    cursor: move;
-  }
-  
-  .cdk-drag-preview {
-    box-sizing: border-box;
-    border-radius: 20px;
-    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
-                0 8px 10px 1px rgba(0, 0, 0, 0.14),
-                0 3px 14px 2px rgba(0, 0, 0, 0.12);
-  }
-  
-  .cdk-drag-placeholder {
-    opacity: 0;
-  }
-  
-  .cdk-drag-animating {
-    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-  }
-  
-  .example-box:last-child {
-    border: none;
-  }
-  
-  .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
-    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-  }
-
-  .cdk-drag-animating {
-    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-  }
-  
-  
