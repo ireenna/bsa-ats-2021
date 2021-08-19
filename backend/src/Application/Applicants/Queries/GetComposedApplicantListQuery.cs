@@ -14,9 +14,9 @@ namespace Application.Applicants.Queries
 
     public class GetComposedApplicantListQueryHandler : IRequestHandler<GetComposedApplicantListQuery, IEnumerable<ApplicantDto>>
     {
-        private readonly IApplicantsReadRepository _applicantRepository;
+        private readonly IApplicantReadRepository _applicantRepository;
         private readonly ISender _mediator;
-        public GetComposedApplicantListQueryHandler(IApplicantsReadRepository applicantRepository, ISender mediator)
+        public GetComposedApplicantListQueryHandler(IApplicantReadRepository applicantRepository, ISender mediator)
         {
             _mediator = mediator;
             _applicantRepository = applicantRepository;
