@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories.Read
             sql.Append(" LEFT JOIN Users ON VacancyCandidates.HrWhoAddedId = Users.Id");
             sql.Append(" LEFT JOIN CandidateReviews ON CandidateReviews.CandidateId = VacancyCandidates.Id");
             sql.Append(" LEFT JOIN Reviews ON CandidateReviews.ReviewId = Reviews.Id");
-            sql.Append($" WHERE VacancyCandidates.Id = '{id}'");
+            sql.Append($" WHERE VacancyCandidates.Id = @Id");
 
             Dictionary<string, CandidateReview> candidateReviewDict = new Dictionary<string, CandidateReview>();
             Dictionary<string, CandidateToStage> candidateToStageDict = new Dictionary<string, CandidateToStage>();
@@ -83,7 +83,7 @@ namespace Infrastructure.Repositories.Read
                         }
 
                         return cachedCandidate;
-                    },
+                    }, new { Id = id },
                     splitOn: "Id,Id,Id,Id,Id,Id"
                 );
 

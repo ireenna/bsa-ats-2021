@@ -38,7 +38,7 @@ namespace Infrastructure.Repositories.Read
             sql.Append(" AND CandidateToStages.DateRemoved IS NULL)");
             sql.Append(" LEFT JOIN CandidateReviews ON CandidateReviews.CandidateId = VacancyCandidates.Id");
             sql.Append(" LEFT JOIN Applicants ON VacancyCandidates.ApplicantId = Applicants.Id");
-            sql.Append($" WHERE Vacancies.Id = '{vacancyId}'");
+            sql.Append($" WHERE Vacancies.Id = @vacancyId");
 
             Dictionary<string, Stage> stageDict = new Dictionary<string, Stage>();
             Dictionary<string, VacancyCandidate> candidateDict = new Dictionary<string, VacancyCandidate>();
@@ -87,8 +87,8 @@ namespace Infrastructure.Repositories.Read
 
                         return cachedVacancy;
                     },
-                    splitOn: "Id,Id,Id,Id"
-                );
+                     new { vacancyId = @vacancyId },
+                     splitOn: "Id,Id,Id,Id");
 
             Vacancy result = resultAsEnumerable.Distinct().FirstOrDefault();
 
@@ -110,10 +110,10 @@ namespace Infrastructure.Repositories.Read
             await connection.OpenAsync();
 
             string sql = $@"SELECT * FROM Stages 
-                            WHERE Stages.VacancyId='{vacancyId}' 
+                            WHERE Stages.VacancyId=@vacancyId 
                             AND Stages.[Index]=0";
 
-            return await connection.QueryFirstOrDefaultAsync<Stage>(sql);
+            return await connection.QueryFirstOrDefaultAsync<Stage>(sql, new { vacancyId = @vacancyId });
         }
     }
 }

@@ -28,8 +28,8 @@ namespace Infrastructure.Repositories.Read
             
             var connection = _connectionFactory.GetSqlConnection();
             await connection.OpenAsync();
-            string sql = $"SELECT * FROM {_tableName} WHERE [CompanyId] = @companyId";
-            var entities = await connection.QueryAsync<Applicant>(sql, new { companyId });
+            string sql = $"SELECT * FROM @tableName WHERE [CompanyId] = @companyId";
+            var entities = await connection.QueryAsync<Applicant>(sql, new { companyId , tableName = _tableName });
             await connection.CloseAsync();
             
             return entities;
@@ -44,7 +44,7 @@ namespace Infrastructure.Repositories.Read
                          "JOIN Stages ON Vacancies.Id = Stages.VacancyId " +
                          "JOIN CandidateToStages ON CandidateToStages.StageId = Stages.Id " +
                          "JOIN VacancyCandidates ON CandidateToStages.CandidateId = VacancyCandidates.Id " +
-                         $"WHERE VacancyCandidates.ApplicantId = \'{applicantId}\'";
+                         $"WHERE VacancyCandidates.ApplicantId = @applicantId";
 
             await connection.OpenAsync();
             var applicantVacancyInfos = await connection.QueryAsync<Vacancy, Stage, CandidateToStage, VacancyCandidate, ApplicantVacancyInfo>(sql,
@@ -55,7 +55,7 @@ namespace Infrastructure.Repositories.Read
                     Title = v.Title,
                     Stage = s.Name
                 };
-            },
+            }, new { applicantId = @applicantId },
             splitOn: "Id,StageId,Id");
             await connection.CloseAsync();
 
@@ -74,8 +74,8 @@ namespace Infrastructure.Repositories.Read
                            From Stages 
                            LEFT OUTER JOIN CandidateToStages ON CandidateToStages.StageId = Stages.Id AND Stages.[Index]=0 
                            LEFT OUTER JOIN VacancyCandidates ON CandidateToStages.CandidateId = VacancyCandidates.Id
-                           WHERE Stages.VacancyId='{vacancyId}') AS Applied ON AllApplicants.Id=Applied.ApplicantId
-                           WHERE AllApplicants.CompanyId = '{companyId}'";
+                           WHERE Stages.VacancyId=@vacancyId) AS Applied ON AllApplicants.Id=Applied.ApplicantId
+                           WHERE AllApplicants.CompanyId = @companyId";
 
             var result = await connection.QueryAsync<Applicant, bool, (Applicant, bool)>(sql,
                 (applicant, isApplied) =>
@@ -86,6 +86,9 @@ namespace Infrastructure.Repositories.Read
                     pair.Item2 = isApplied;
 
                     return pair;
+                }, new { 
+                    vacancyId = @vacancyId,
+                    companyId = @companyId
                 },
             splitOn: "IsApplied");
 
@@ -103,10 +106,14 @@ namespace Infrastructure.Repositories.Read
 
             string sql = @$"
                     SELECT * FROM Applicants
-                    WHERE Applicants.Id='{id}'
-                    AND Applicants.CompanyId='{companyId}'";
+                    WHERE Applicants.Id = @Id
+                    AND Applicants.CompanyId = @companyId";
 
-            var applicant = await connection.QueryFirstOrDefaultAsync<Applicant>(sql);
+            var applicant = await connection.QueryFirstOrDefaultAsync<Applicant>(sql, 
+            new{
+                Id = id,
+                companyId = @companyId
+            });
 
             if (applicant == null)
             {
