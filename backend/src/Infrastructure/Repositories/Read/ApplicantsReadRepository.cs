@@ -28,8 +28,8 @@ namespace Infrastructure.Repositories.Read
             
             var connection = _connectionFactory.GetSqlConnection();
             await connection.OpenAsync();
-            string sql = $"SELECT * FROM @tableName WHERE [CompanyId] = @companyId";
-            var entities = await connection.QueryAsync<Applicant>(sql, new { companyId , tableName = _tableName });
+            string sql = $"SELECT * FROM {_tableName} WHERE [CompanyId] = @companyId";
+            var entities = await connection.QueryAsync<Applicant>(sql, new { companyId });
             await connection.CloseAsync();
             
             return entities;

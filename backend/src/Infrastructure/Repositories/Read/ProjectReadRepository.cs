@@ -78,13 +78,11 @@ namespace Infrastructure.Repositories.Read
             string companyId = (await _currentUserContext.GetCurrentUser()).CompanyId;
 
             using var connection = _connectionFactory.GetSqlConnection();
-            string sql = $"SELECT * FROM @tableName WHERE [@property] = @propertyValue AND IsDeleted = 0 AND CompanyId = @companyId";
+            string sql = $"SELECT * FROM {_tableName} WHERE [{property}] = @propertyValue AND IsDeleted = 0 AND CompanyId = @companyId";
             return await connection.QueryFirstOrDefaultAsync<Project>(sql, new
             {
                 propertyValue = @propertyValue,
-                property = @property,
-                companyId = @companyId,
-                tableName = _tableName
+                companyId = @companyId
             });
         }
 
