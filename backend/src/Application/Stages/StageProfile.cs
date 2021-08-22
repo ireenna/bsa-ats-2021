@@ -14,11 +14,6 @@ namespace Application.Stages
                     dto => dto.Candidates,
                     opt => opt.MapFrom(s =>
                         s.CandidateToStages.Select(cts => cts.Candidate))
-                )
-                .ForMember(
-                    dto => dto.Reviews,
-                    opt => opt.MapFrom(s =>
-                        s.ReviewToStages.Select(rts => rts.Review))
                 );
         }
     }

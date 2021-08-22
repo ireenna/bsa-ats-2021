@@ -1,8 +1,8 @@
-import { OnlyApplicant } from '../applicants/only-applicant';
+import { Applicant } from '../applicant/applicant';
 import { Model } from '../model';
 
 export interface ShortVacancyCandidateWithApplicant extends Model {
   averageMark?: number;
   dateAdded: Date;
-  applicant: OnlyApplicant;
+  applicant: Applicant;
 }

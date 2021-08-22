@@ -28,7 +28,6 @@ namespace Domain.Entities
         public User HrWhoAdded { get; set; }
         public ICollection<CandidateToStage> CandidateToStages { get; set; }
         public ICollection<CandidateReview> Reviews { get; set; }
-        public ICollection<CandidateComment> CandidateComments { get; set; }
         public IList<DomainEvent> DomainEvents { get; set; }
     }
 }
