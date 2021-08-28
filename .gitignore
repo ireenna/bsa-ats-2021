@@ -408,3 +408,10 @@ baseline.json
 
 # Husky
 .husky/_
+
+# config file for automation tests
+tests/wdio.conf.js
+
+
+# package files
+tests/package-lock.json

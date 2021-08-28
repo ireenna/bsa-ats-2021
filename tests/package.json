@@ -1,0 +1,21 @@
+{
+    "name": "wdio-scout",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+        "test": "./node_modules/.bin/wdio wdio.conf.js"
+    },
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "@wdio/cli": "^7.5.1",
+        "chai": "^4.3.4"
+    },
+    "devDependencies": {
+        "@wdio/local-runner": "^7.7.4",
+        "@wdio/mocha-framework": "^7.7.4",
+        "@wdio/spec-reporter": "^7.7.3",
+        "chromedriver": "^91.0.1",
+        "wdio-chromedriver-service": "^7.1.1"
+    }
+}
