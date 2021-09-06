@@ -13,6 +13,7 @@ export interface Interview{
   userParticipants: User[],
   vacancy: Vacancy,
   scheduled: string,
+  note:string,
   duration: number,
   candidate: Applicant,
   createdDate: Date,

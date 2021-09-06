@@ -5,6 +5,8 @@ import { Interview } from '../../models/interview.model';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DataErrorOccurredEvent } from 'devextreme/ui/tree_list';
+import { MatDialog } from '@angular/material/dialog';
+import { CreateInterviewComponent } from '../create-interview/create-interview.component';
 
 @Pipe({
   name: 'chunk',
@@ -43,8 +45,11 @@ export class InterviewsPageComponent{
   private interviewsDateSet: Date[] = [];
   private interviews: Interview[] = [];
   public dateArrived!: Promise<boolean>;
-  constructor(public service: InterviewsService) {
-    service.getInterviews()
+  constructor(public service: InterviewsService, private dialog: MatDialog) {
+    this.getInterviews();
+  }
+  private getInterviews(){
+    this.service.getInterviews()
       .pipe(
         takeUntil(this.unsubscribe$),
       )
@@ -63,7 +68,6 @@ export class InterviewsPageComponent{
       },
       );
   }
-
   private date: Date = new Date();
   private generateCalendarDays(): void {
     // we reset our calendar

@@ -30,6 +30,8 @@ import { Review } from 'src/app/shared/models/reviews/review';
 // This line can't be shorter
 // eslint-disable-next-line max-len
 import { AddCandidateModalComponent } from 'src/app/shared/components/modal-add-candidate/modal-add-candidate.component';
+import { CreateInterviewComponent } 
+  from 'src/app/interviews/components/create-interview/create-interview.component';
 
 interface CandidatePos {
   index: number;
@@ -159,6 +161,11 @@ export class VacanciesStagesBoardComponent implements OnInit, OnDestroy {
         updateStage();
       }
     }
+  }
+
+  public createInterviewDialog(){
+    //TODO: Input current vacancy and candidates from board in modal.
+    this.modalService.open(CreateInterviewComponent);
   }
 
   public openCandidateAddModal(): void {
