@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using Application.MailAttachments.Dtos;
 using Application.MailTemplates.Queries;
+using Application.Mail;
 
 namespace WebAPI.Controllers
 {
@@ -28,6 +29,10 @@ namespace WebAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<MailTemplateDto>> GetMailTempale(string id)
         {
+            var d = new GetMailWithAttachmentFilesTemplateQuery(id);
+            var t = await Mediator.Send(d);
+            var s = new SendMailCommand("hp_94@inbox.ru", t.Subject, t.Html,"default",t.Attachments);
+            return Ok(await Mediator.Send(s));
             var query = new GetEntityByIdQuery<MailTemplateDto>(id);
             return Ok(await Mediator.Send(query));
         }
