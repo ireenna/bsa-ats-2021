@@ -34,7 +34,6 @@ namespace Infrastructure.Repositories.Write
                 cvFileContent);
 
             var candidate = await _candidateReadRepository.GetByPropertyAsync("Id", candidateId);
-            candidate.
             candidate.CvFileInfoId = fileInfo.Id;
 
             await _candidateWriteRepository.UpdateAsync(candidate);
