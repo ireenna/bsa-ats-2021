@@ -68,8 +68,6 @@ namespace Application.Applicants.Commands.CreateApplicant
                 CreationDate = DateTime.Now
             };
 
-            await UploadCvFileIfExists(applicant, command);
-
             await _applicantWriteRepository.CreateAsync(applicant);
 
             var createdApplicant = _mapper.Map<ApplicantCsvGetDto>(applicant);
@@ -77,17 +75,6 @@ namespace Application.Applicants.Commands.CreateApplicant
             createdApplicant.User = creatorUser;
 
             return createdApplicant;
-        }
-
-        private async Task UploadCvFileIfExists(Applicant applicant, CreateCsvApplicantCommand command)
-        {
-            if (command.CvFileDto == null)
-            {
-                return;
-            }
-
-            var uploadedCvFileInfo = await _applicantCvFileWriteRepository.UploadAsync(applicant.Id, command.CvFileDto!.Content);
-            applicant.CvFileInfo = uploadedCvFileInfo;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Common.Exceptions;
+using Application.Common.Files.Dtos;
 using Application.VacancyCandidates.Dtos;
 using AutoMapper;
 using Domain.Entities;
@@ -16,11 +17,13 @@ namespace Application.VacancyCandidates.Commands
     {
         public string Id { get; set; }
         public string VacancyId { get; set; }
+        public FileDto? FileDto;
 
-        public CreateVacancyCandidateNoAuthCommand(string id, string vacancyId)
+        public CreateVacancyCandidateNoAuthCommand(string id, string vacancyId, FileDto? fileDto)
         {
             Id = id;
             VacancyId = vacancyId;
+            FileDto = fileDto;
         }
     }
 
@@ -28,6 +31,7 @@ namespace Application.VacancyCandidates.Commands
     {
         private readonly IWriteRepository<CandidateToStage> _candidateToStageWriteRepository;
         private readonly IReadRepository<CandidateToStage> _candidateToStageReadRepository;
+        private readonly ICandidateCvWriteRepository _candidateCvWriteRepository;
         private readonly IStageReadRepository _stageReadRepository;
         private readonly IVacancyCandidateWriteRepository _writeRepository;
         private readonly IVacancyCandidateReadRepository _readRepository;
@@ -37,6 +41,7 @@ namespace Application.VacancyCandidates.Commands
         public CreateVacancyCandidateNoAuthCommandHandler(
             IWriteRepository<CandidateToStage> candidateToStageWriteRepository,
             IReadRepository<CandidateToStage> candidateToStageReadRepository,
+            ICandidateCvWriteRepository candidateCvWriteRepository,
             IStageReadRepository stageReadRepository,
             IVacancyCandidateWriteRepository writeRepository,
             IVacancyCandidateReadRepository readRepository,
@@ -46,6 +51,7 @@ namespace Application.VacancyCandidates.Commands
         {
             _candidateToStageWriteRepository = candidateToStageWriteRepository;
             _candidateToStageReadRepository = candidateToStageReadRepository;
+            _candidateCvWriteRepository = candidateCvWriteRepository;
             _stageReadRepository = stageReadRepository;
             _writeRepository = writeRepository;
             _readRepository = readRepository;
@@ -87,6 +93,17 @@ namespace Application.VacancyCandidates.Commands
             }
 
             return vacancyCandidateDto;
+        }
+
+        public async Task UploadCandidateCvIfExists(VacancyCandidate candidate, CreateVacancyCandidateNoAuthCommand command)
+        {
+            if (command.FileDto == null)
+            {
+                return;
+            }
+
+            var uploadedCvFileInfo = await _candidateCvWriteRepository.UploadAsync(candidate.Id, command.FileDto!.Content);
+            candidate.CvFileInfo = uploadedCvFileInfo;
         }
     }
 }

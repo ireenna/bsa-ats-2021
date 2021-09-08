@@ -5,9 +5,14 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 // eslint-disable-next-line
 import { AvatarModalComponent } from 'src/app/shared/components/avatar-modal/avatar-modal.component';
+import { FileInputComponent } from 'src/app/shared/components/file-input/file-input.component';
+import { UploadCvComponent } from 'src/app/shared/components/upload-cv/upload-cv.component';
+import { FileType } from 'src/app/shared/enums/file-type.enum';
 import { FullVacancyCandidate } from 'src/app/shared/models/vacancy-candidates/full';
 import { NotificationService } from 'src/app/shared/services/notification.service';
 import { VacancyCandidateService } from 'src/app/shared/services/vacancy-candidate.service';
+import { CvFileInfo } from 'src/app/shared/models/file/cvFileInfo';
+import { CandidateCvService } from 'src/app/shared/services/candidate-cv.service';
 
 @Component({
   selector: 'app-one-candidate',
@@ -24,8 +29,9 @@ export class OneCandidateComponent implements OnInit, OnDestroy {
   private readonly unsubscribe$: Subject<void> = new Subject<void>();
 
   public constructor(
-    private readonly service: VacancyCandidateService,
+    private readonly candidateService: VacancyCandidateService,
     private readonly notificationService: NotificationService,
+    private readonly candidateCvService: CandidateCvService,
     private readonly dialog: MatDialog,
   ) {}
 
@@ -45,11 +51,12 @@ export class OneCandidateComponent implements OnInit, OnDestroy {
   }
 
   private loadData(id: string): void {
-    this.service
+    this.candidateService
       .getFull(id, this.vacancyId)
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(
         (data) => {
+          console.log(data);
           this.loading = false;
           this.data = data;
         },
@@ -58,5 +65,33 @@ export class OneCandidateComponent implements OnInit, OnDestroy {
           this.notificationService.showErrorMessage('Failed to load', 'Error');
         },
       );
+  }
+
+  public openCvUploadDialog(): void {
+    let dialogRef = this.dialog.open(UploadCvComponent, {
+      width: '600px',
+      data: this.id,
+    });
+
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((cvFileInfo: CvFileInfo) => {
+        this.data.cvName = cvFileInfo.name;
+        this.data.cvLink = cvFileInfo.url;
+      });
+  }
+
+  public deleteCv(): void {
+    this.candidateCvService.deleteCv(this.id)
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => {
+        this.data.cvName = undefined;
+        this.data.cvLink = undefined;
+        this.notificationService.showSuccessMessage('The cv was successfully deleted', 'Success');
+      },
+      (error: Error) => {
+        this.notificationService.showErrorMessage(error.message,
+          'An error occured while deleting the cv');
+      });
   }
 }

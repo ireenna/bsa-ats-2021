@@ -46,8 +46,8 @@ namespace Application.Applicants.Commands
                 await _applicantCvFileWriteRepository.UpdateAsync(command.ApplicantId, command.NewCvFileDto.Content);
             } else
             {
-                var cvFileInfo = await _applicantCvFileWriteRepository.UploadAsync(command.ApplicantId, command.NewCvFileDto.Content);
-                applicant.CvFileInfo = cvFileInfo;
+                //var cvFileInfo = await _applicantCvFileWriteRepository.UploadAsync(command.ApplicantId, command.NewCvFileDto.Content);
+                //applicant.CvFileInfo = cvFileInfo;
 
                 await _applicantWriteRepository.UpdateAsync(applicant);
             }

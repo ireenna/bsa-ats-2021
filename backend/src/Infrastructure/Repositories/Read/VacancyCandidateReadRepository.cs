@@ -9,6 +9,7 @@ using Domain.Interfaces.Read;
 using Application.Common.Exceptions;
 using Infrastructure.Dapper.Interfaces;
 using Infrastructure.Repositories.Abstractions;
+using Application.Common.Exceptions.Candidates;
 
 namespace Infrastructure.Repositories.Read
 {
@@ -22,6 +23,20 @@ namespace Infrastructure.Repositories.Read
         ) : base("VacancyCandidates", connectionFactory)
         {
             _applicantRepository = applicantRepository;
+        }
+
+        public async Task<FileInfo> GetCvFileInfoAsync(string candidateId)
+        {
+            SqlConnection connection = _connectionFactory.GetSqlConnection();
+
+            var query = @"SELECT fi.* FROM VacancyCandidates a
+                          INNER JOIN FileInfos fi ON a.CvFileInfoId = fi.Id
+                          WHERE a.Id = @candidateId;";
+
+            var fileInfo = await connection.QueryFirstOrDefaultAsync<FileInfo>(query, new { candidateId = candidateId });
+            await connection.CloseAsync();
+
+            return fileInfo;
         }
 
         public async Task<VacancyCandidate> GetFullAsync(string id, string vacancyId)
@@ -110,8 +125,8 @@ namespace Infrastructure.Repositories.Read
 
             try
             {
-                FileInfo cvInfo = await _applicantRepository.GetCvFileInfoAsync(candidate.ApplicantId);
-                candidate.Applicant.CvFileInfo = cvInfo;
+                //FileInfo cvInfo = await _applicantRepository.GetCvFileInfoAsync(candidate.ApplicantId);
+                //candidate.Applicant.CvFileInfo = cvInfo;
             }
             catch
             {

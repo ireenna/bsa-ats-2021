@@ -49,22 +49,9 @@ namespace Application.Applicants.Commands.DeleteApplicant
             var applicant = await _applicantReadRepository.GetByIdAsync(command.Id);
 
             await _applicantWriteRepository.DeleteAsync(applicant.Id);
-
-            await DeleteCvFileIfExists(applicant);
-
             var deletedApplicantDto = _mapper.Map<ApplicantDto>(applicant);
 
             return deletedApplicantDto;
-        }
-
-        private async Task DeleteCvFileIfExists(Applicant applicant)
-        {
-            if (applicant.CvFileInfo == null)
-            {
-                return;
-            }
-
-            await _applicantCvFileWriteRepository.DeleteAsync(applicant.CvFileInfo);
         }
     }
 }

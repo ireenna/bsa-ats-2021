@@ -109,7 +109,7 @@ export class FileInputComponent implements OnInit {
     }
 
     this.limitFiles();
-    this.realInput.nativeElement.value = ''; // Reset value
+    this.realInput.nativeElement.value = ''; // Reset valueІ
     this.upload.emit(this.chosen);
   }
 

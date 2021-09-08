@@ -72,8 +72,6 @@ namespace Application.Applicants.Commands
                 CreationDate = DateTime.UtcNow,
             };
 
-            await UploadCvFileIfExists(applicant, command);
-
             await _applicantWriteRepository.CreateAsync(applicant);
 
             var createdApplicant = _mapper.Map<Applicant, ApplicantDto>(applicant);
@@ -83,17 +81,6 @@ namespace Application.Applicants.Commands
             createdApplicant.Vacancies = new List<ApplicantVacancyInfoDto>();
 
             return createdApplicant;
-        }
-
-        private async Task UploadCvFileIfExists(Applicant applicant, CreateApplicantCommand command)
-        {
-            if (command.CvFileDto == null)
-            {
-                return;
-            }
-
-            var uploadedCvFileInfo = await _applicantCvFileWriteRepository.UploadAsync(applicant.Id, command.CvFileDto!.Content);
-            applicant.CvFileInfo = uploadedCvFileInfo;
         }
 
         private async Task CreateElasticEntityAndAddTagsIfExist(ApplicantDto createdApplicant, CreateApplicantCommand command)

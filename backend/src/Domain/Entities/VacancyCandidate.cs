@@ -25,7 +25,9 @@ namespace Domain.Entities
         public DateTime DateAdded { get; set; }
         public bool IsSelfApplied { get; set; }
         public bool IsViewed { get; set; }
+        public string CvFileInfoId { get; set; }
 
+        public FileInfo CvFileInfo { get; set; }
         public Applicant Applicant { get; set; }
         public User HrWhoAdded { get; set; }
         public ICollection<CandidateToStage> CandidateToStages { get; set; }

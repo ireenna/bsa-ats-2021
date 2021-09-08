@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Domain.Entities.Abstractions;
 
@@ -20,9 +21,8 @@ namespace Domain.Entities
         // TODO: add company read repository and remove nullability
         public bool IsSelfApplied { get; set; }
         public Company Company { get; set; }
-        public FileInfo CvFileInfo { get; set; }
         public DateTime CreationDate { get; set; }
-        public bool HasCv { get => CvFileInfo != null; }
+        public bool HasCv { get => Candidates.Any(c => c.CvFileInfoId != null); }
         public ICollection<PoolToApplicant> ApplicantPools { get; set; } = new List<PoolToApplicant>();
         public ICollection<VacancyCandidate> Candidates { get; set; } = new List<VacancyCandidate>();
     }

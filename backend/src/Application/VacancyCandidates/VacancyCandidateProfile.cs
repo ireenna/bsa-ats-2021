@@ -49,9 +49,9 @@ namespace Application.VacancyCandidates
                 .ForMember(dto => dto.Email, opt => opt.MapFrom(vc => vc.Applicant.Email))
                 .ForMember(dto => dto.Phone, opt => opt.MapFrom(vc => vc.Applicant.Phone))
                 .ForMember(dto => dto.CvLink, opt =>
-                    opt.MapFrom(vc => vc.Applicant.CvFileInfo == null ? null : vc.Applicant.CvFileInfo.PublicUrl))
+                    opt.MapFrom(vc => vc.CvFileInfo == null ? null : vc.CvFileInfo.PublicUrl))
                 .ForMember(dto => dto.CvName, opt =>
-                    opt.MapFrom(vc => vc.Applicant.CvFileInfo == null ? null : vc.Applicant.CvFileInfo.Name))
+                    opt.MapFrom(vc => vc.CvFileInfo == null ? null : vc.CvFileInfo.Name))
                 .ForMember(dto => dto.Experience, opt => opt.MapFrom(vc => vc.Applicant.Experience))
                 .ForMember(dto => dto.ExperienceDescription, opt =>
                     opt.MapFrom(vc => vc.Applicant.ExperienceDescription));

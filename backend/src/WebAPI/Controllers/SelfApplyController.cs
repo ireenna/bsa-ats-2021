@@ -52,7 +52,7 @@ namespace WebAPI.Controllers
 
             var applicant = await Mediator.Send(commandApplicant);
 
-            var commandCandidate = new CreateVacancyCandidateNoAuthCommand(applicant.Id, vacancyId);
+            var commandCandidate = new CreateVacancyCandidateNoAuthCommand(applicant.Id, vacancyId, cvFileDto);
 
             return Ok(await Mediator.Send(commandCandidate));
         }

@@ -150,6 +150,8 @@ namespace Infrastructure
 
             services.AddScoped<IMailAttachmentFileWriteRepository, MailAttachmentFileWriteRepository>();
 
+            services.AddScoped<ICandidateCvWriteRepository, CandidateCvWriteRepository>();
+
             return services;
         }
 
@@ -218,8 +220,13 @@ namespace Infrastructure
             services.AddScoped<IReadRepository<CandidateReview>, CandidateReviewReadRepository>();
             services.AddScoped<IReadRepository<CandidateToStage>, CandidateToStageReadRepository>();
 
+            services.AddScoped<IReadRepository<FileInfo>, ReadRepository<FileInfo>>(factory => 
+                new ReadRepository<FileInfo>("FileInfos", factory.GetRequiredService<IConnectionFactory>())
+            );
+
             services.AddScoped<IInterviewReadRepository, InterviewReadRepository>();
 
+            services.AddScoped<ICandidateCvReadRepository, CandidateCvReadRepository>();
             services.AddScoped<ICandidateToStageReadRepository, CandidateToStageReadRepository>();
             services.AddScoped<IUserReadRepository, UserReadRepository>();
             services.AddScoped<IRTokenReadRepository, RTokenReadRepository>();

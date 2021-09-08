@@ -55,6 +55,8 @@ import { PlaceholdersEditComponent } from '../users/components/placeholders/plac
 import { AvatarModalComponent } from './components/avatar-modal/avatar-modal.component';
 import { TableFilterComponent } from './components/table-filter/table-filter.component';
 import { MarkBarComponent } from './components/mark-bar/mark-bar.component';
+import { UploadCvComponent } from './components/upload-cv/upload-cv.component';
+import { CandidateCvService } from './services/candidate-cv.service';
 
 @NgModule({
   exports: [
@@ -147,7 +149,9 @@ import { MarkBarComponent } from './components/mark-bar/mark-bar.component';
     MatTooltipModule,
     ClipboardModule,
   ],
-  providers: [HttpClientService],
+  providers: [
+    HttpClientService,
+  ],
   declarations: [
     MultiselectComponent,
     ButtonComponent,
@@ -172,6 +176,7 @@ import { MarkBarComponent } from './components/mark-bar/mark-bar.component';
     AvatarModalComponent,
     TableFilterComponent,
     MarkBarComponent,
+    UploadCvComponent,
   ],
 })
 export class SharedModule {}

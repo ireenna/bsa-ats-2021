@@ -6,6 +6,7 @@ namespace Domain.Interfaces.Read
 {
     public interface IVacancyCandidateReadRepository : IReadRepository<VacancyCandidate>
     {
+        Task<FileInfo> GetCvFileInfoAsync(string candidateId);
         Task<VacancyCandidate> GetFullAsync(string id, string vacancyId);
         Task<VacancyCandidate> GetFullByApplicantAndStageAsync(string applicantId, string stageId);
     }

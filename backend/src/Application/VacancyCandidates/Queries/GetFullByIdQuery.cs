@@ -28,22 +28,33 @@ namespace Application.VacancyCandidates.Queries
     {
         private readonly IVacancyCandidateReadRepository _readRepository;
         private readonly IElasticReadRepository<ElasticEntity> _elasticEntityRepository;
+        private readonly ICandidateCvReadRepository _candidateCvReadRepository;
+        private readonly IReadRepository<FileInfo> _fileInfoReadRepository;
         private readonly IMapper _mapper;
 
         public GetFullVacancyCandidateByIdQueryHandler(
             IVacancyCandidateReadRepository readRepository,
+            ICandidateCvReadRepository candidateCvReadRepository,
+            IReadRepository<FileInfo> fileInfoReadRepository,
             IElasticReadRepository<ElasticEntity> elasticEntityRepository,
             IMapper mapper
         )
         {
             _readRepository = readRepository;
+            _fileInfoReadRepository = fileInfoReadRepository;
             _elasticEntityRepository = elasticEntityRepository;
+            _candidateCvReadRepository = candidateCvReadRepository;
             _mapper = mapper;
         }
 
         public async Task<VacancyCandidateFullDto> Handle(GetFullVacancyCandidateByIdQuery query, CancellationToken _)
         {
             VacancyCandidate candidate = await _readRepository.GetFullAsync(query.Id, query.VacancyId);
+            if (candidate.CvFileInfoId != null)
+            {
+                candidate.CvFileInfo = await _fileInfoReadRepository.GetAsync(candidate.CvFileInfoId);
+                candidate.CvFileInfo.PublicUrl = await _candidateCvReadRepository.GetSignedUrlAsync(candidate.Id);
+            }
             VacancyCandidateFullDto candidateFullDto = _mapper.Map<VacancyCandidate, VacancyCandidateFullDto>(candidate);
 
             ElasticEntity tags = await _elasticEntityRepository.GetAsync(candidate.ApplicantId);

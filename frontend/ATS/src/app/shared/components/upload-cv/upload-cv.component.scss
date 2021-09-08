@@ -1,0 +1,35 @@
+.dialog-header-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    height: min-content;
+    align-items: flex-start;
+}
+
+.mat-dialog-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    height: min-content;
+}
+
+.mat-dialog-actions {
+    height: min-content;
+    padding: 0;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    min-height: 0;
+
+    .mat-icon {
+        color: #000;
+
+        &:hover {
+            cursor: pointer;
+            color: #ee2a64;
+        }
+    }
+}
+
+.upload-btn {
+    margin: 20px 0 10px;
+}

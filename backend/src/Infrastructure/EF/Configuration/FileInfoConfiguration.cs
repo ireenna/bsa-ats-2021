@@ -9,6 +9,12 @@ namespace Infrastructure.EF.Configuration
         public void Configure(EntityTypeBuilder<FileInfo> builder)
         {
             builder.ToTable("FileInfos");
+
+            builder.HasOne(f => f.VacancyCandidate)
+                .WithOne(c => c.CvFileInfo)
+                .HasForeignKey<VacancyCandidate>(c => c.CvFileInfoId)
+                .HasConstraintName("candidate_fileInfo_FK")
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

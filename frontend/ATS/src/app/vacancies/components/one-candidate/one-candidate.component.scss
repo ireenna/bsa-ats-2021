@@ -1,5 +1,55 @@
 @import "../../../../common.scss";
 
+.cv-file-block {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  a {
+    display: flex;
+
+    .mat-icon {
+      margin-right: 6px;
+    }
+
+    span {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 250px;
+      height: 24px;
+      line-height: 24px;
+    }
+  }
+  
+  .delete-cv-btn {
+    color: #f00;
+    cursor: pointer;
+    margin-left: 15px;
+  }
+}
+
+.upload_cv_btn {
+  display: flex;
+  align-items: center;
+
+  .mat-icon {
+    margin-right: 6px;
+    color: #291965;
+  }
+
+  &:hover {
+    cursor: pointer;
+  
+    span {
+      color: #291965;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  }
+}
+
 .container {
   padding-left: 20px;
   padding-top: 15px;
