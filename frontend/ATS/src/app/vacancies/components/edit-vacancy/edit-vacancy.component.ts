@@ -2,11 +2,9 @@ import {
   Component,
   EventEmitter,
   Inject,
-  OnChanges,
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -18,7 +16,7 @@ import { VacancyFull } from 'src/app/shared/models/vacancy/vacancy-full';
 import { ProjectService } from 'src/app/shared/services/project.service';
 import { VacancyService } from 'src/app/shared/services/vacancy.service';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { VacancyData } from 'src/app/shared/models/vacancy/vacancy-data';
 import { Tag } from 'src/app/shared/models/tags/tag';
 import { ElasticEntity } from 'src/app/shared/models/elastic-entity/elastic-entity';
@@ -49,6 +47,8 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
   tierFrom: number = 0;
   tierTo: number = 0;
 
+  selfApplyStage: Stage | null = null;
+
   @Output() vacancyChange = new EventEmitter<VacancyFull>();
 
   public loading: boolean = true;
@@ -73,7 +73,8 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
         salaryTo: ['', [Validators.required]],
         tierFrom: ['', [Validators.required]],
         tierTo: ['', [Validators.required]],
-        link: ['', [Validators.required]],
+        link: ['', [Validators.required, 
+          Validators.pattern('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?')]],
         isHot: [''],
         isRemote: [''],
         tags: [''],
@@ -120,6 +121,20 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
           } else {
             this.elasticEntity.id = response.tags.id;
           }
+          
+          this.selfApplyStage = null;
+          response.stages.forEach(stage=>{
+            if(stage.index == 0){
+              this.selfApplyStage = stage;
+            }
+          });
+          
+          response.stages.forEach((stage,index) => {
+            if(stage.index==0){
+              response.stages.splice(index,1);
+            }
+          });
+
           this.vacancyForm.setValue({
             title: response.title,
             description: response.description,
@@ -169,8 +184,13 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
     this.submitted = true;
     this.loading = true;
 
+    if(this.selfApplyStage != null){
+      this.stageList.splice(0,0,this.selfApplyStage);
+    }
+
     this.elasticEntity.tagDtos = this.tags;
     this.elasticEntity.elasticType = ElasticType.VacancyTags;
+
     this.vacancy = {
       title: this.vacancyForm.controls['title'].value,
       description: this.vacancyForm.controls['description'].value,
@@ -265,14 +285,16 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
     {
       id: '',
       name: 'Contacted',
-      index: 0,
-      type: 0,
+      index: 1,
+      type: 1,
+      dataJson: null,
       actions: [
         {
           id: '1',
           name: 'Schedule interview action',
-          actionType: 3,
+          actionType: 2,
           stageId: '',
+          stageChangeEventType: 1,
         },
       ],
       reviews: [],
@@ -282,14 +304,16 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
     {
       id: '',
       name: 'Hr interview',
-      index: 1,
+      index: 2,
       type: 3,
+      dataJson: null,
       actions: [
         {
           id: '',
           name: 'Schedule interview action',
-          actionType: 3,
+          actionType: 2,
           stageId: '',
+          stageChangeEventType: 1,
         },
       ],
       reviews: [],
@@ -299,14 +323,16 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
     {
       id: '',
       name: 'Tech interview',
-      index: 2,
+      index: 3,
       type: 3,
+      dataJson: null,
       actions: [
         {
           id: '',
           name: 'Schedule interview action',
-          actionType: 3,
+          actionType: 2,
           stageId: '',
+          stageChangeEventType: 1,
         },
       ],
       reviews: [],
@@ -316,14 +342,16 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
     {
       id: '',
       name: 'Live coding session',
-      index: 3,
-      type: 0,
+      index: 4,
+      type: 1,
+      dataJson: null,
       actions: [
         {
           id: '',
           name: 'Schedule interview action',
-          actionType: 3,
+          actionType: 2,
           stageId: '',
+          stageChangeEventType: 1,
         },
       ],
       reviews: [],
@@ -333,14 +361,16 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
     {
       id: '',
       name: 'Pre-offer',
-      index: 4,
+      index: 5,
       type: 4,
+      dataJson: null,
       actions: [
         {
-          id: '1',
+          id: '',
           name: 'Schedule interview action',
-          actionType: 3,
+          actionType: 2,
           stageId: '',
+          stageChangeEventType: 1,
         },
       ],
       reviews: [],
@@ -350,14 +380,16 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
     {
       id: '',
       name: 'Offer',
-      index: 5,
+      index: 6,
       type: 4,
+      dataJson: null,
       actions: [
         {
           id: '',
           name: 'Schedule interview action',
-          actionType: 3,
+          actionType: 2,
           stageId: '',
+          stageChangeEventType: 1,
         },
       ],
       reviews: [],
@@ -375,7 +407,7 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
 
   //changes indexes of stages
   sortStageList() {
-    let index = 0;
+    let index = 1;
     this.stageList.forEach((x) => {
       x.index = index;
       index++;
@@ -386,17 +418,31 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
   //common func for saving
   toSave(newStage: Stage) {
     newStage.vacancyId = this.vacancyId;
+
     if (this.isEditStageMode) {
-      let stage = this.stageList.find((x) => x.index === newStage.index);
+      let index = -1;
+
+      let stage = this.stageList.find((x, i) => {
+        const rightItem = x.index === newStage.index;
+
+        if (rightItem) {
+          index = i;
+        }
+
+        return rightItem;
+      });
+
       if (stage && stage.index >= 0) {
         newStage.id = stage.id;
-        this.stageList[stage?.index] = { ...newStage };
+        this.stageList[index] = { ...newStage };
       }
+
       this.isEditStageMode = false;
     } else {
-      newStage.index = this.stageList.length;
+      newStage.index = this.stageList.length+1;
       this.stageList.push(newStage);
     }
+
     this.stageToEdit = {} as Stage;
   }
 
@@ -410,6 +456,7 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
   }
 
   cancelStageEdit() {
+    this.isEditStageMode = false;
     this.stageToEdit = {} as Stage;
     this.displayCreateStage();
   }
@@ -425,9 +472,6 @@ export class EditVacancyComponent implements OnInit, OnDestroy {
 
   //moving stages
   dropStage(event: CdkDragDrop<any>) {
-    this.stageList[event.previousContainer.data.index] =
-      event.container.data.item;
-    this.stageList[event.container.data.index] =
-      event.previousContainer.data.item;
+    moveItemInArray(this.stageList, event.previousContainer.data.index, event.container.data.index);
   }
 }

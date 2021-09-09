@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import {
   CdkDragDrop,
@@ -7,8 +7,8 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 
-import { forkJoin, Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { EMPTY, forkJoin, Observable, Subject } from 'rxjs';
+import { mergeMap, takeUntil } from 'rxjs/operators';
 import { StageService } from 'src/app/shared/services/stage.service';
 import { NotificationService } from 'src/app/shared/services/notification.service';
 import { StageWithCandidates } from 'src/app/shared/models/stages/with-candidates';
@@ -30,6 +30,10 @@ import { Review } from 'src/app/shared/models/reviews/review';
 // This line can't be shorter
 // eslint-disable-next-line max-len
 import { AddCandidateModalComponent } from 'src/app/shared/components/modal-add-candidate/modal-add-candidate.component';
+import { ArchivationService } from 'src/app/archive/services/archivation.service';
+import { AppRoute } from 'src/app/routing/AppRoute';
+import { ConfirmationDialogComponent } 
+  from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 
 interface CandidatePos {
   index: number;
@@ -62,7 +66,9 @@ export class VacanciesStagesBoardComponent implements OnInit, OnDestroy {
     private readonly reviewService: ReviewService,
     private readonly notificationService: NotificationService,
     private readonly route: ActivatedRoute,
+    private readonly router: Router,
     private readonly modalService: MatDialog,
+    private readonly archivationService: ArchivationService,
   ) {}
 
   public ngOnInit(): void {
@@ -110,10 +116,13 @@ export class VacanciesStagesBoardComponent implements OnInit, OnDestroy {
         this.vacancyCandidateService
           .changeCandidateStage(
             event.item.element.nativeElement.id, // Stores candidate id
+            this.vacancyId,
             event.container.id, // Stores new stage id
           )
-          .subscribe({
-            error: () => {
+          .subscribe(
+            (_) =>
+              this.MarkCandidateAsViewed(event.item.element.nativeElement.id),
+            (_) => {
               this.notificationService.showErrorMessage(
                 'Failed to save candidate\'s stage',
                 'Error',
@@ -121,13 +130,17 @@ export class VacanciesStagesBoardComponent implements OnInit, OnDestroy {
 
               backward();
             },
-          });
+          );
 
       const stage = this.data.find(
         (s) => s.id === event.container.id,
       ) as StageWithCandidates;
 
       forward();
+
+      if (stage.index == 0) {
+        return backward();
+      }
 
       if (stage.isReviewable) {
         const dialog: MatDialogRef<RateCandidateModalComponent> =
@@ -157,7 +170,7 @@ export class VacanciesStagesBoardComponent implements OnInit, OnDestroy {
   public openCandidateAddModal(): void {
     this.modalService
       .open(AddCandidateModalComponent, {
-        width: '400px',
+        width: '500px',
         autoFocus: false,
         panelClass: 'candidate-dialog',
         data: {
@@ -168,12 +181,50 @@ export class VacanciesStagesBoardComponent implements OnInit, OnDestroy {
       .subscribe((_) => this.loadData());
   }
 
+  public openCompletingVacancyConfirmDialog(): void {
+    this.modalService.open(ConfirmationDialogComponent, {
+      width: '450px',
+      height: 'min-content',
+      autoFocus: false,
+      data: {
+        action: 'Complete',
+        entityName: 'vacancy',
+        additionalMessage: 'Vacancy will be archived.',
+      },
+    })
+      .afterClosed()
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        mergeMap(response => {
+          if (response) {
+            return this.archivationService.archiveVacancy(this.vacancyId, true);
+          }
+          return EMPTY;
+        }),
+      )
+      .subscribe(
+        (_) => {
+          this.notificationService.showSuccessMessage(
+            `Vacancy ${this.title} closed!`,
+          );
+          this.router.navigate([AppRoute.Vacancies]);
+        },
+        () => {
+          this.notificationService.showErrorMessage(
+            'Vacancy closing is failed!',
+          );
+        },
+      );
+  }
+
   public openCandidateModal(id: string): void {
     let pos: CandidatePos = { index: 0, stageIndex: 0 };
     let prevPos: CandidatePos | undefined;
     let hasPrevious: boolean = false;
     let nextPos: CandidatePos | undefined;
     let nextFullName: string | undefined;
+
+    this.MarkCandidateAsViewed(id);
 
     this.data.forEach((stage, sIndex) =>
       stage.candidates.forEach((candidate, index) => {
@@ -268,7 +319,7 @@ export class VacanciesStagesBoardComponent implements OnInit, OnDestroy {
           this.openCandidateModal(
             this.data[prevPos!.stageIndex].candidates[prevPos!.index].id,
           );
-        } else if (state == 'next') {
+        } else if (state === 'next') {
           this.openCandidateModal(
             this.data[nextPos!.stageIndex].candidates[nextPos!.index].id,
           );
@@ -306,7 +357,15 @@ export class VacanciesStagesBoardComponent implements OnInit, OnDestroy {
     }).subscribe(
       ({ reviews, vacancy }) => {
         this.loading = false;
+
         this.data = [...vacancy.stages];
+        vacancy.stages.forEach((stage,index) =>{
+          if(stage.index==0 && stage.candidates.length == 0){
+            vacancy.stages.splice(index, 1);
+            this.data = [...vacancy.stages];
+          }
+        });
+
         this.reviews = [...reviews];
         this.title = vacancy.title;
 
@@ -359,6 +418,20 @@ export class VacanciesStagesBoardComponent implements OnInit, OnDestroy {
       const additional = this.reviews.filter((r) => !fixedIds.includes(r.id));
 
       this.additionalCriteriaMap[stage.id] = [...additional];
+    });
+  }
+
+  public MarkCandidateAsViewed(id: string) {
+    this.data.forEach((stage) => {
+      stage.candidates.forEach((candidate) => {
+        if (candidate.id == id) {
+          if (candidate.isViewed != true) {
+            this.vacancyCandidateService.MarkAsViewed(id).subscribe((_) => {
+              candidate.isViewed = true;
+            });
+          }
+        }
+      });
     });
   }
 }

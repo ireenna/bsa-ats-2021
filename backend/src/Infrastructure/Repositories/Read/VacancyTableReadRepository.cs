@@ -2,6 +2,7 @@
 using AutoMapper;
 using Dapper;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Interfaces.Abstractions;
 using Domain.Interfaces.Read;
 using Infrastructure.Dapper.Interfaces;
@@ -20,7 +21,6 @@ namespace Infrastructure.Repositories.Read
         { 
             _mapper = mapper;
         }
-
 
         public async Task<IEnumerable<VacancyTable>> GetVacancyTablesByCompanyIdAsync(string companyId)
         {
@@ -46,7 +46,9 @@ namespace Infrastructure.Repositories.Read
                 AND CandidateToStages.StageId = Stages.Id AND CandidateToStages.DateRemoved IS NULL))
             ) as CandidateCount
             WHERE 
-            v.CompanyId = @id AND p.IsDeleted = 0";
+            v.CompanyId = @id 
+            AND NOT EXISTS (SELECT * FROM ArchivedEntities AS AV WHERE AV.EntityType = @entityVacancyType AND AV.EntityId = v.Id)
+            ORDER BY v.CreationDate DESC;";
 
             var vacancyDictionary = new Dictionary<string, VacancyTable>();
             var userToRolesDictionary = new Dictionary<string, UserToRole>();
@@ -80,7 +82,8 @@ namespace Infrastructure.Repositories.Read
                 },
                 new
                 {
-                    id = companyId
+                    id = companyId,
+                    entityVacancyType = EntityType.Vacancy
                 },
                     splitOn: "Id,Id,Id,Id,Id,Id,count"
                 ));

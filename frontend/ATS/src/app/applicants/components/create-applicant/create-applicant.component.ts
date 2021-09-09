@@ -25,7 +25,6 @@ export class CreateApplicantComponent implements OnInit, OnDestroy {
     lastName: '',
     email: '',
     phone: '',
-    skype: '',
     linkedInUrl: '',
     experience: 0,
     experienceDescription: '',
@@ -36,7 +35,9 @@ export class CreateApplicantComponent implements OnInit, OnDestroy {
       tagDtos: [],
     },
     cv: null,
+    photo: null,
   };
+
   public allowedCvFileType = FileType.Pdf;
 
   private readonly unsubscribe$: Subject<void> = new Subject<void>();
@@ -87,6 +88,10 @@ export class CreateApplicantComponent implements OnInit, OnDestroy {
 
   public uploadApplicantCv(files: File[]): void {
     this.createdApplicant.cv = files[0];
+  }
+
+  public uploadApplicantPhoto(files: File[]): void {
+    this.createdApplicant.photo = files[0];
   }
 
   public ngOnDestroy(): void {

@@ -14,12 +14,20 @@ namespace Infrastructure.Repositories.Read
 {
     public class VacancyCandidateReadRepository : ReadRepository<VacancyCandidate>, IVacancyCandidateReadRepository
     {
-        public VacancyCandidateReadRepository(IConnectionFactory connectionFactory)
-            : base("VacancyCandidates", connectionFactory) { }
+        private readonly IApplicantReadRepository _applicantRepository;
+
+        public VacancyCandidateReadRepository(
+            IConnectionFactory connectionFactory,
+            IApplicantReadRepository applicantRepository
+        ) : base("VacancyCandidates", connectionFactory)
+        {
+            _applicantRepository = applicantRepository;
+        }
 
         public async Task<VacancyCandidate> GetFullAsync(string id, string vacancyId)
         {
             SqlConnection connection = _connectionFactory.GetSqlConnection();
+            await connection.OpenAsync();
 
             StringBuilder sql = new StringBuilder();
             sql.Append("SELECT *");
@@ -97,7 +105,31 @@ namespace Infrastructure.Repositories.Read
                     splitOn: "Id,Id,Id,Id,Id,Id"
                 );
 
+            await connection.CloseAsync();
+
             VacancyCandidate candidate = resultAsArray.Distinct().FirstOrDefault();
+
+            // Oops! Ran out of JOINs in the first query!
+
+            try
+            {
+                FileInfo cvInfo = await _applicantRepository.GetCvFileInfoAsync(candidate.ApplicantId);
+                candidate.Applicant.CvFileInfo = cvInfo;
+            }
+            catch
+            {
+                //
+            }
+
+            try
+            {
+                FileInfo photoInfo = await _applicantRepository.GetPhotoFileInfoAsync(candidate.ApplicantId);
+                candidate.Applicant.PhotoFileInfo = photoInfo;
+            }
+            catch
+            {
+                //
+            }
 
             if (candidate == null || candidate.CandidateToStages.Where(cts => cts.DateRemoved == null).Count() == 0)
             {
@@ -105,11 +137,28 @@ namespace Infrastructure.Repositories.Read
             }
 
             candidate.CandidateToStages = candidate.CandidateToStages
-                .OrderBy(cts => cts.DateRemoved)
-                .OrderByDescending(cts => cts.DateRemoved.HasValue)
+                .OrderByDescending(cts => cts.DateAdded)
                 .ToList();
 
             return candidate;
+        }
+
+        public async Task<VacancyCandidate> GetFullByApplicantAndStageAsync(string applicantId, string stageId)
+        {
+            using var connection = _connectionFactory.GetSqlConnection();
+
+            string sql = @$"SELECT VC.*
+                            FROM CandidateToStages AS CtS
+                            JOIN VacancyCandidates AS VC ON VC.Id = CtS.CandidateId
+                            JOIN Applicants AS A ON A.Id=VC.ApplicantId
+                            WHERE CtS.StageId = @stageId
+                            AND VC.ApplicantId = @applicantId";
+
+            return await connection.QueryFirstOrDefaultAsync<VacancyCandidate>(sql, new
+            {
+                applicantId = @applicantId,
+                stageId = @stageId
+            });
         }
     }
 }

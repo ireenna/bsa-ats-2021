@@ -7,6 +7,10 @@ import { HttpClientService } from './http-client.service';
 import { MarkedApplicant } from 'src/app/shared/models/applicants/marked-applicant';
 import { GetShortApplicant } from '../models/applicants/get-short-applicant';
 import { FileUrl } from '../models/file/file';
+import { CsvApplicant } from 'src/app/applicants/models/CsvApplicant';
+import { VacancyWithRecentActivity }
+  from '../models/candidate-to-stages/vacancy-with-recent-activity';
+import { getModifyApplicantFormData } from '../helpers/modifyApplicant';
 
 @Injectable({ providedIn: 'root' })
 export class ApplicantsService {
@@ -25,21 +29,17 @@ export class ApplicantsService {
   }
 
   public addApplicant(createApplicant: CreateApplicant): Observable<Applicant> {
-    const formData = new FormData();
-    formData.append('body', JSON.stringify(createApplicant));
-    if (createApplicant.cv) {
-      formData.append('cvFile', createApplicant.cv, createApplicant.cv.name);
-    }
-    return this.httpClient.postRequest<Applicant>('/applicants', formData);
+    return this.httpClient.postRequest<Applicant>(
+      '/applicants',
+      getModifyApplicantFormData(createApplicant),
+    );
   }
 
   public updateApplicant(updateApplicant: UpdateApplicant): Observable<Applicant> {
-    const formData = new FormData();
-    formData.append('body', JSON.stringify(updateApplicant));
-    if (updateApplicant.cv) {
-      formData.append('cvFile', updateApplicant.cv, updateApplicant.cv.name);
-    }
-    return this.httpClient.putRequest<Applicant>('/applicants', formData);
+    return this.httpClient.putRequest<Applicant>(
+      '/applicants',
+      getModifyApplicantFormData(updateApplicant),
+    );
   }
 
   public deleteApplicant(applicantId: string): Observable<Applicant> {
@@ -52,10 +52,13 @@ export class ApplicantsService {
     return this.httpClient.getRequest<FileUrl>(`/applicants/${applicantId}/cv`);
   }
 
-  public createApplicantsFromCSV(file: File) {
-    const fd = new FormData();
-    fd.append('file', file, file.name);
-    return this.httpClient.postFullRequest<any>('/applicants/csv', fd);
+  public getApplicantByEmail(email: string): Observable<Applicant>{
+    return this.httpClient.getRequest<Applicant>(`/applicants/property/email/${email}`);
   }
 
+  public getRecentActivity(id: string): Observable<VacancyWithRecentActivity[]> {
+    return this.httpClient.getRequest<VacancyWithRecentActivity[]>(
+      `/recentActivity/for-applicant/${id}`,
+    );
+  }
 }

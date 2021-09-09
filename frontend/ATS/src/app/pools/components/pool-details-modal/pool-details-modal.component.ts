@@ -1,9 +1,7 @@
-import {Component, ViewChild, OnInit, Inject, AfterViewInit} from '@angular/core';
-import { MatTable } from '@angular/material/table';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatTableDataSource} from '@angular/material/table';
+import {Component, ViewChild, OnInit, Inject, AfterViewInit, Output, EventEmitter} 
+  from '@angular/core';
+import { MatTable, MatTableDataSource} from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
-import { StylePaginatorDirective } from 'src/app/shared/directives/style-paginator.directive';
 import { ApplicantsPool } from 'src/app/shared/models/applicants-pool/applicants-pool';
 import { Subject } from 'rxjs';
 import { PoolService } from 'src/app/shared/services/poolService';
@@ -11,8 +9,10 @@ import { takeUntil} from 'rxjs/operators';
 import { NotificationService } from 'src/app/shared/services/notification.service';
 import { ApplicantIsSelected } from 'src/app/shared/models/applicants/applicant-select';
 import { Tag } from 'src/app/shared/models/tags/tag';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import { FormGroup, FormControl } from '@angular/forms';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { SelectModalComponent } from '../modal/select-modal/select-modal.component';
+import { getApplicantAvatar } from 'src/app/shared/helpers/avatar';
 
 const DATA: ApplicantIsSelected[] = [];
 
@@ -26,16 +26,23 @@ export class PoolDetailsModalComponent implements OnInit, AfterViewInit {
 
   public id: string = '';
   public pool!: ApplicantsPool;
+  public poolApplicants!: ApplicantIsSelected[];
+  public allApplicants!: ApplicantIsSelected[];
+  @Output() submitClicked = new EventEmitter<any>();
 
-  constructor(    
+  @ViewChild(MatTable) table!: MatTable<ApplicantsPool>;
+
+  constructor(
+    private readonly dialogService: MatDialog,  
     private poolService : PoolService,
-    @Inject(MAT_DIALOG_DATA) public data: string,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    public dialogRef: MatDialogRef<SelectModalComponent>,
     private notificationService : NotificationService,
   ) {}
 
   displayedColumns: string[] = [
     'position',
-    'name',
+    'firstName',    
     'tags',    
   ];
 
@@ -47,36 +54,29 @@ export class PoolDetailsModalComponent implements OnInit, AfterViewInit {
   public poolForm: FormGroup = new FormGroup({
     'createdBy': new FormControl({value:'', disabled:true}),
     'dateCreated': new FormControl({value:'', disabled:true}),    
-    'name': new FormControl({value:'', disabled:true}),
-    'description': new FormControl({value:'', disabled:true}),
+    'name': new FormControl('', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.maxLength(20)]),
+    'description': new FormControl('', [
+      Validators.required,
+      Validators.minLength(10),
+    ]),
     'company': new FormControl({value:'', disabled:true}),
     'applicants': new FormControl({value:'', disabled:true}),
     'id': new FormControl({value:'', disabled:true}),
   });
   
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild(StylePaginatorDirective) directive!: StylePaginatorDirective;
-  @ViewChild(MatTable) table!: MatTable<ApplicantsPool>;
+  
+  @ViewChild(MatSort) sort!: MatSort;  
 
-  ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
-    this.directive?.applyFilter$.emit();
+  ngAfterViewInit() {    
+    this.dataSource.sort = this.sort;    
   }
-
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if(this.dataSource.paginator) {
-      this.directive?.applyFilter$.emit();
-      this.dataSource.paginator.firstPage();
-    }
-  }
-
+  
+  
   ngOnInit() : void {
-    this.loadData(this.data);
+    this.loadData(this.data.id);
   }
 
   loadData(id:string) {
@@ -88,15 +88,14 @@ export class PoolDetailsModalComponent implements OnInit, AfterViewInit {
         (resp) => {
           this.pool = resp;
           this.poolForm.setValue(this.pool);
-          const applicantsMod = resp.applicants
+          this.poolApplicants = resp.applicants
             .map(
               value => {
                 return {
                   ...value, isShowAllTags: false};                
               },            
-            );
-          this.dataSource.data = applicantsMod;
-          this.updatePaginator();
+            );          
+          this.dataSource.data = this.poolApplicants;          
         },
         (error) => {          
           this.notificationService.showErrorMessage(error);
@@ -106,10 +105,11 @@ export class PoolDetailsModalComponent implements OnInit, AfterViewInit {
       );
   }
 
-  updatePaginator() {
-    this.dataSource.paginator = this.paginator;
-    this.directive?.applyFilter$.emit();
+  public getAvatar(applicant: ApplicantIsSelected): string {
+    return getApplicantAvatar(applicant);
   }
+
+  
   public getFirstTags(applicant: ApplicantIsSelected): Tag[] {
     if(applicant.tags)
     {
@@ -127,6 +127,50 @@ export class PoolDetailsModalComponent implements OnInit, AfterViewInit {
   public toggleTags(applicant: ApplicantIsSelected): void {
     applicant.isShowAllTags = applicant.isShowAllTags ? false : true;
   }
+
+  addApplicants() {
+    let addDialog = this.dialogService.open(SelectModalComponent, {
+      width: '600px',
+      height: '360px',
+      data: {selected:this.dataSource.data, applicants: this.data.applicants,
+      },
+        
+    });
+  
+    addDialog.afterClosed().subscribe((result) => {});
+  
+    const dialogSubmitSubscription =
+        addDialog.componentInstance.submitClicked.subscribe((result) => {
+          this.dataSource.data = result.selected;
+          this.table.renderRows();
+          dialogSubmitSubscription.unsubscribe();
+        });
+  }
+  
+
+  compareById(o1:any, o2:any): boolean{    
+    return o1.id === o2.id;
+  }
+
+  onUserChange(event:any) {
+    // this.table.renderRows();    
+  }
+
+  getClass(control:string)
+  {
+    return this.poolForm.controls[control].dirty && this.poolForm.controls[control].errors?
+      'invalid-input':'';
+  }
+
+  save() {
+    const data = this.poolForm.value;
+    data.id = this.data.id;
+    data.applicantsIds = this.dataSource.data.map((x) => x.id).join();
+    this.submitClicked.emit(data);
+    this.dialogRef.close();
+
+  }
+
 
 
 }

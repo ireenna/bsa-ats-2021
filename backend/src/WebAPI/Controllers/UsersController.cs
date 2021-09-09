@@ -9,6 +9,11 @@ using System.Collections.Generic;
 using Application.Users.Queries;
 using System;
 using Application.Projects.Commands;
+using Application.Users.Commands.Create;
+using Microsoft.AspNetCore.Http;
+using Application.Common.Files.Dtos;
+using Newtonsoft.Json;
+using Application.Users.Queries.GetUserById;
 
 namespace WebAPI.Controllers
 {
@@ -20,7 +25,14 @@ namespace WebAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(string id)
         {
-            var query = new GetEntityByIdQuery<UserDto>(id);
+            var query = new GetUserByIdQuery(id);
+            return Ok(await Mediator.Send(query));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUsers()
+        {
+            var query = new GetUsersForHrLeadQuery();
             return Ok(await Mediator.Send(query));
         }
 
@@ -62,6 +74,25 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> CurrentHRProjects()
         {
             var query = new GetProjectsByCurrentHRCompanyCommand();
+            return Ok(await Mediator.Send(query));
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> PutUserAsync([FromForm] string body, [FromForm] IFormFile cvFile = null)
+        {
+
+            var updateDto = JsonConvert.DeserializeObject<UserUpdateDto>(body);
+
+            var cvFileDto = cvFile != null ? new FileDto(cvFile.OpenReadStream(), cvFile.FileName) : null;
+
+            var query = new UpdateUserCommand(updateDto!, cvFileDto);
+            return Ok(await Mediator.Send(query));
+        }
+
+        [HttpGet("pending-registrations")]
+        public async Task<IActionResult> GetPendingRegistrations()
+        {
+            var query = new GetPendingRegistrationsQuery();
             return Ok(await Mediator.Send(query));
         }
     }

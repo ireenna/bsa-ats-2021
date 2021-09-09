@@ -1,4 +1,5 @@
 using Application.Applicants.Commands;
+using Application.Applicants.Commands.CreateApplicant;
 using Application.Applicants.Commands.DeleteApplicant;
 using Application.Applicants.Dtos;
 using Application.Applicants.Queries;
@@ -12,7 +13,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,25 +60,69 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostApplicantAsync([FromForm] string body, [FromForm] IFormFile cvFile = null)
+        public async Task<IActionResult> PostApplicantAsync(
+            [FromForm] string body,
+            [FromForm] IFormFile cvFile = null,
+            [FromForm] IFormFile photoFile = null
+        )
         {
             var createApplicantDto = JsonConvert.DeserializeObject<CreateApplicantDto>(body);
+            FileDto cvFileDto;
+            FileDto photoFileDto;
 
-            var cvFileDto = cvFile != null ? new FileDto(cvFile.OpenReadStream(), cvFile.FileName) : null;
+            if (string.IsNullOrEmpty(createApplicantDto.CvLink))
+            {
+                cvFileDto = cvFile != null ? new FileDto(cvFile.OpenReadStream(), cvFile.FileName) : null;
+            }
+            else
+            {
+                cvFileDto = new FileDto(createApplicantDto.CvLink);
+            }
 
-            var query = new CreateApplicantCommand(createApplicantDto!, cvFileDto);
+            if (string.IsNullOrEmpty(createApplicantDto.PhotoLink))
+            {
+                photoFileDto = photoFile != null ? new FileDto(photoFile.OpenReadStream(), photoFile.FileName) : null;
+            }
+            else
+            {
+                photoFileDto = new FileDto(createApplicantDto.PhotoLink);
+            }
+
+            var query = new CreateApplicantCommand(createApplicantDto!, cvFileDto, photoFileDto);
 
             return Ok(await Mediator.Send(query));
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutApplicantAsync([FromForm] string body, [FromForm] IFormFile cvFile = null)
+        public async Task<IActionResult> PutApplicantAsync(
+            [FromForm] string body,
+            [FromForm] IFormFile cvFile = null,
+            [FromForm] IFormFile photoFile = null
+        )
         {
             var updateApplicantDto = JsonConvert.DeserializeObject<UpdateApplicantDto>(body);
+            FileDto cvFileDto;
+            FileDto photoFileDto;
 
-            var cvFileDto = cvFile != null ? new FileDto(cvFile.OpenReadStream(), cvFile.FileName) : null;
+            if (string.IsNullOrEmpty(updateApplicantDto.CvLink))
+            {
+                cvFileDto = cvFile != null ? new FileDto(cvFile.OpenReadStream(), cvFile.FileName) : null;
+            }
+            else
+            {
+                cvFileDto = new FileDto(updateApplicantDto.CvLink);
+            }
 
-            var query = new UpdateApplicantCommand(updateApplicantDto!, cvFileDto);
+            if (string.IsNullOrEmpty(updateApplicantDto.PhotoLink))
+            {
+                photoFileDto = photoFile != null ? new FileDto(photoFile.OpenReadStream(), photoFile.FileName) : null;
+            }
+            else
+            {
+                photoFileDto = new FileDto(updateApplicantDto.PhotoLink);
+            }
+
+            var query = new UpdateApplicantCommand(updateApplicantDto!, cvFileDto, photoFileDto);
 
             return Ok(await Mediator.Send(query));
         }
@@ -123,25 +167,20 @@ namespace WebAPI.Controllers
             return Ok(await Mediator.Send(query));
         }
 
+        [HttpGet("property/{propertyName}/{property}")]
+        public async Task<IActionResult> GetByPropertyAsync(string propertyName, string property)
+        {
+            var query = new GetApplicantByPropertyQuery(property, propertyName);
+
+            return Ok(await Mediator.Send(query));
+        }
+
         [HttpPost("to_tags/")]
         public async Task<IActionResult> PostElasticAsync([FromBody] CreateElasticEntityDto createDto)
         {
             var query = new CreateElasticDocumentCommand<CreateElasticEntityDto>(createDto);
 
             return Ok(await Mediator.Send(query));
-        }
-
-        [HttpPost("csv/")]
-        public async Task<IActionResult> PostApplicantFromCsv()
-        {
-            var file = Request.Form.Files[0];
-
-            using (var fileReadStream = file.OpenReadStream())
-            {
-                var command = new CreateApplicantsFromCsvCommand(fileReadStream);
-
-                return Ok(await Mediator.Send(command));
-            }
         }
 
         [HttpPost("tags/{entityId}")]

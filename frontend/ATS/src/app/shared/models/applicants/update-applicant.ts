@@ -6,13 +6,15 @@ export interface UpdateApplicant {
   lastName: string;
   email: string;
   phone: string;
-  skype: string;
   linkedInUrl: string;
   experience: number;
   experienceDescription?: string;
+  creationDate: Date;
   skills?: string;
   hasCv: boolean;
-  cv: File | null;
+  hasPhoto: boolean;
+  cv: string | File | null;
+  photo: string | File | null;
 
   tags: ElasticEntity;
 }

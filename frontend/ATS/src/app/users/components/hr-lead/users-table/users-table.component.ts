@@ -1,5 +1,11 @@
 import { FollowedService } from 'src/app/shared/services/followedService';
-import { AfterViewInit, Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ViewChild,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -7,6 +13,7 @@ import { StylePaginatorDirective } from 'src/app/shared/directives/style-paginat
 import { UserDataService } from 'src/app/users/services/user-data.service';
 import { NotificationService } from 'src/app/shared/services/notification.service';
 import { takeUntil, mergeMap } from 'rxjs/operators';
+// eslint-disable-next-line
 import { SendingRegisterLinkDialogComponent }
   from '../send-registration-link-dialog/sending-register-link-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,6 +21,15 @@ import { UserTableData } from 'src/app/users/models/user-table-data';
 import { Subject } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { EntityType } from 'src/app/shared/enums/entity-type.enum';
+import {
+  FilterDescription,
+  FilterType,
+  PageDescription,
+  TableFilterComponent,
+} from 'src/app/shared/components/table-filter/table-filter.component';
+import { EditHrFormComponent } from '../../edit-hr-form/edit-hr-form.component';
+import { PendingRegistrationsComponent }
+  from '../pending-registrations/pending-registrations.component';
 
 @Component({
   selector: 'app-users-table',
@@ -21,71 +37,113 @@ import { EntityType } from 'src/app/shared/enums/entity-type.enum';
   styleUrls: ['./users-table.component.scss'],
 })
 export class UsersTableComponent implements AfterViewInit, OnDestroy {
-  public displayedColumns: string[] =
-  ['position', 'full-name', 'email', 'birth-date',
-    'creation-date', 'email-confirmed', 'actions'];
-  private users: UserTableData[] = [];
+  public displayedColumns: string[] = [
+    'position',
+    'full-name',
+    'email',
+    'birth-date',
+    'creation-date',
+    'actions',
+  ];
+
+  public filterDescription: FilterDescription = [
+    {
+      id: 'firstName',
+      name: 'First name',
+    },
+    {
+      id: 'lastName',
+      name: 'Last name',
+    },
+    {
+      id: 'email',
+      name: 'Email',
+    },
+    {
+      id: 'birthDate',
+      name: 'Birth date',
+      type: FilterType.Date,
+    },
+    {
+      id: 'creationDate',
+      name: 'Creation date',
+      type: FilterType.Date,
+    },
+  ];
+
+  public pageToken: string = 'followedUserPage';
+  public page?: string = localStorage.getItem(this.pageToken) ?? undefined;
+
+  public pageDescription: PageDescription = [
+    {
+      id: 'followed',
+      selector: (user: UserTableData) => user.isFollowed ?? false,
+    },
+  ];
+
   public dataSource: MatTableDataSource<UserTableData>;
   public loading: boolean = true;
-  public isFollowedPage: boolean = false;
+  public isFollowedPage: string = 'false';
+  public users: UserTableData[] = [];
+
+  private filteredData: UserTableData[] = [];
   private followedSet: Set<string> = new Set();
   private readonly unsubscribe$: Subject<void> = new Subject<void>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(StylePaginatorDirective) directive!: StylePaginatorDirective;
   @ViewChild(MatSort) sort!: MatSort;
-  private readonly followedPageToken: string = 'followedUserPage';
+  @ViewChild('filter') public filter!: TableFilterComponent;
+
   constructor(
     private userDataService: UserDataService,
     private notificationService: NotificationService,
     private followService: FollowedService,
-    private dialog: MatDialog) {
+    private dialog: MatDialog,
+  ) {
     this.dataSource = new MatTableDataSource<UserTableData>();
-    this.followService.getFollowed(EntityType.User)
-      .pipe(takeUntil(this.unsubscribe$),
-        mergeMap(data => {
-          data.forEach(item => this.followedSet.add(item.entityId));
-          return this.userDataService
-            .getUsersForHrLead();
-        },
-        ),
-        finalize(() => this.loading = false),
+    this.followService
+      .getFollowed(EntityType.User)
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        mergeMap((data) => {
+          data.forEach((item) => this.followedSet.add(item.entityId));
+          return this.userDataService.getUsersForHrLead();
+        }),
+        finalize(() => (this.loading = false)),
       )
-      .subscribe((resp) => {
-        resp.forEach((user, index) => {
-          user.position = index + 1;
-          user.isFollowed = this.followedSet.has(user.id ?? '');
-        });
-        this.users = resp;
-        if (localStorage.getItem(this.followedPageToken) !== null)
-          this.dataSource.data = this.users.filter(item => item.isFollowed);
-        else
+      .subscribe(
+        (resp) => {
+          resp.forEach((user) => user.isFollowed = this.followedSet.has(user.id ?? ''));
+          this.users = resp;
           this.dataSource.data = this.users;
-        this.directive.applyFilter$.emit();
-      },
-      () => {
-        this.notificationService.showErrorMessage('Something went wrong');
-      });
-    this.isFollowedPage = localStorage.getItem(this.followedPageToken) !== null;
+          this.dataSource.data.forEach(x=>x.avatarUrl = x.avatarUrl ?
+            x.avatarUrl+'?'+performance.now():'');
+          this.directive.applyFilter$.emit();
+        },
+        () => {
+          this.notificationService.showErrorMessage('Something went wrong');
+        },
+      );
+      
   }
+
   public getUsers() {
+    this.loading = true;
     this.userDataService
       .getUsersForHrLead()
       .pipe(
         takeUntil(this.unsubscribe$),
-        finalize(() => this.loading = false),
+        finalize(() => (this.loading = false)),
       )
       .subscribe(
         (resp) => {
-          resp.forEach((user, index) => {
-            user.position = index + 1;
-            user.isFollowed = this.followedSet.has(user.id ?? '');
-          });
+          resp.forEach((user) => user.isFollowed = this.followedSet.has(user.id ?? ''));
           this.users = resp;
-          if (localStorage.getItem(this.followedPageToken) !== null)
-            this.dataSource.data = this.users.filter(item => item.isFollowed);
-          else
-            this.dataSource.data = this.users;
+          this.dataSource.data = this.users;
+          this.dataSource.data.forEach(x=>x.avatarUrl = x.avatarUrl ?
+            x.avatarUrl+'?'+performance.now():'');
+          
           this.directive.applyFilter$.emit();
         },
         () => {
@@ -94,21 +152,35 @@ export class UsersTableComponent implements AfterViewInit, OnDestroy {
       );
   }
 
+  public setFiltered(filtered: UserTableData[]): void {
+    this.filteredData = filtered;
+    this.dataSource.data = this.filteredData;
+    this.directive.applyFilter$.emit();
+    this.dataSource.paginator?.firstPage();
+  }
+
   public ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
 
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
-        case 'full-name': return `${item.firstName}  ${item.lastName}`;
-        case 'email': return item.email;
-        case 'birth-date': return item.birthDate;
-        case 'creation-date': return item.creationDate;
-        case 'email-confirmed': return item.isEmailConfirmed;
-        default: return (item as IIndexable)[property];
+        case 'full-name':
+          return `${item.firstName}  ${item.lastName}`;
+        case 'email':
+          return item.email;
+        case 'birth-date':
+          return item.birthDate;
+        case 'creation-date':
+          return item.creationDate;
+        case 'email-confirmed':
+          return item.isEmailConfirmed;
+        default:
+          return (item as IIndexable)[property];
       }
     };
   }
+
 
   public ngOnDestroy(): void {
     this.unsubscribe$.next();
@@ -125,6 +197,11 @@ export class UsersTableComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  public setPage(page?: string): void {
+    this.filter.setPage(page);
+    this.page = page;
+  }
+
   public OpenSendRegistrationLinkDialog(): void {
     this.dialog.open(SendingRegisterLinkDialogComponent, {
       disableClose: true,
@@ -132,38 +209,41 @@ export class UsersTableComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  public switchToFollowed() {
-    this.isFollowedPage = true;
-    this.dataSource.data = this.dataSource.data.filter(user => user.isFollowed);
-    this.followService.switchRefreshFollowedPageToken(true, this.followedPageToken);
-    this.directive.applyFilter$.emit();
+  public openPendingRegistrationsDialog(): void {
+    this.dialog.open(PendingRegistrationsComponent, {
+      width: '800px',
+      height: '80vh',
+      autoFocus: false,
+    });
   }
 
-  public switchAwayToAll() {
-    this.isFollowedPage = false;
-    this.dataSource.data = this.users;
-    this.followService.switchRefreshFollowedPageToken(false, this.followedPageToken);
-    this.directive.applyFilter$.emit();
-  }
-
-  public onBookmark(data: UserTableData, perfomToFollowCleanUp: boolean = false) {
+  public onBookmark(data: UserTableData, perfomToFollowCleanUp: string = 'false') {
     data.isFollowed = !data.isFollowed;
     if (data.isFollowed) {
-      this.followService.createFollowed(
-        {
+      this.followService
+        .createFollowed({
           entityId: data.id ?? '',
           entityType: EntityType.User,
-        },
-      ).subscribe();
+        })
+        .subscribe();
     } else {
-      this.followService.deleteFollowed(
-        EntityType.User, data.id ?? '',
-      ).subscribe();
+      this.followService
+        .deleteFollowed(EntityType.User, data.id ?? '')
+        .subscribe();
     }
-    if (perfomToFollowCleanUp) {
+    if (perfomToFollowCleanUp == 'true') {
       this.dataSource.data = this.dataSource.data.filter(user => user.isFollowed);
     }
     this.directive.applyFilter$.emit();
+  }
+
+  openEditDialog(data:UserTableData){
+    const dialogRef = this.dialog.open(EditHrFormComponent, {
+      width: '70%',
+      height: 'auto',
+      data: {userToEdit:data, isUserLeadProfile:true},
+    }).afterClosed()
+      .subscribe(() => this.getUsers());
   }
 }
 

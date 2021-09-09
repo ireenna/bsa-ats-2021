@@ -10,13 +10,14 @@ import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from './components/button/button.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -33,6 +34,7 @@ import { MainContentComponent } from './components/main-content/main-content.com
 import { RouterModule } from '@angular/router';
 import { SpinnerComponent } from './components/spinner/spinner.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { StylePaginatorDirective } from './directives/style-paginator.directive';
 // eslint-disable-next-line
 import { AddCandidateModalComponent } from './components/modal-add-candidate/modal-add-candidate.component';
@@ -42,7 +44,21 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatMenuModule } from '@angular/material/menu';
 import { TagsEditComponent } from '../users/components/tags-edit/tags-edit.component';
 import { DeleteConfirmComponent } from './components/delete-confirm/delete-confirm.component';
+import { LogoBlockComponent } from '../users/components/logo-block/logo-block.component';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { UserRoleDirective } from './directives/user-role.directive';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+import { CopyClipboardDirective } from './directives/copy-clipboard.directive';
 import { TimezonePipe } from './pipes/timezone-pipe';
+import { FilesEditComponent } from '../users/components/files-edit/files-edit.component';
+import { PlaceholdersEditComponent } from '../users/components/placeholders/placeholders.component';
+import { AvatarModalComponent } from './components/avatar-modal/avatar-modal.component';
+import { TableFilterComponent } from './components/table-filter/table-filter.component';
+import { MarkBarComponent } from './components/mark-bar/mark-bar.component';
+import { ConfirmationDialogComponent } 
+  from './components/confirmation-dialog/confirmation-dialog.component';
+import { TimezoneDateAdapter } from './date-adapters/timezone.date-adapter';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 @NgModule({
   exports: [
@@ -73,6 +89,7 @@ import { TimezonePipe } from './pipes/timezone-pipe';
     MatCheckboxModule,
     MatChipsModule,
     MatExpansionModule,
+    MatGridListModule,
     TopicComponent,
     FileInputComponent,
     MenuComponent,
@@ -84,9 +101,21 @@ import { TimezonePipe } from './pipes/timezone-pipe';
     MatPaginatorModule,
     MatSortModule,
     MatMenuModule,
+    MatTooltipModule,
     TagsEditComponent,
     DeleteConfirmComponent,
+    ConfirmationDialogComponent,
+    LogoBlockComponent,
+    ClipboardModule,
+    UserProfileComponent,
     TimezonePipe,
+    FilesEditComponent,
+    PlaceholdersEditComponent,
+    AvatarModalComponent,
+    TableFilterComponent,
+    MarkBarComponent,
+    NgxMaterialTimepickerModule,
+    RouterModule,
   ],
   imports: [
     MatButtonModule,
@@ -110,6 +139,7 @@ import { TimezonePipe } from './pipes/timezone-pipe';
     MatCheckboxModule,
     MatChipsModule,
     MatExpansionModule,
+    MatGridListModule,
     BrowserAnimationsModule,
     BrowserModule,
     MatSelectModule,
@@ -121,8 +151,14 @@ import { TimezonePipe } from './pipes/timezone-pipe';
     MatAutocompleteModule,
     MatCheckboxModule,
     MatMenuModule,
+    MatTooltipModule,
+    ClipboardModule,
+    NgxMaterialTimepickerModule,
   ],
-  providers: [HttpClientService],
+  providers: [
+    HttpClientService,
+    { provide: DateAdapter, useClass: TimezoneDateAdapter },
+  ],
   declarations: [
     MultiselectComponent,
     ButtonComponent,
@@ -137,7 +173,17 @@ import { TimezonePipe } from './pipes/timezone-pipe';
     AddCandidateModalComponent,
     TagsEditComponent,
     DeleteConfirmComponent,
+    ConfirmationDialogComponent,
+    LogoBlockComponent,
+    UserProfileComponent,
+    UserRoleDirective,
+    CopyClipboardDirective,
     TimezonePipe,
+    FilesEditComponent,
+    PlaceholdersEditComponent,
+    AvatarModalComponent,
+    TableFilterComponent,
+    MarkBarComponent,
   ],
 })
 export class SharedModule {}

@@ -20,25 +20,7 @@ export class UpdateApplicantComponent implements OnDestroy {
   public validationGroup: FormGroup | undefined = undefined;
   public loading: boolean = false;
 
-  public updatedApplicant: UpdateApplicant = {
-    id: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    skype: '',
-    linkedInUrl: '',
-    experience: 0,
-    experienceDescription: '',
-    skills: '',
-    tags: {
-      id: '',
-      elasticType: 1,
-      tagDtos: [],
-    },
-    hasCv: false,
-    cv: null,
-  };
+  public updatedApplicant!: UpdateApplicant;
   public allowedCvFileType = FileType.Pdf;
 
   private readonly unsubscribe$: Subject<void> = new Subject<void>();
@@ -50,19 +32,28 @@ export class UpdateApplicantComponent implements OnDestroy {
     private readonly notificationsService: NotificationService,
   ) {
     this.validationGroup = applicantGroup;
-    this.updatedApplicant.id = applicant.id;
-    this.updatedApplicant.firstName = applicant.firstName;
-    this.updatedApplicant.lastName = applicant.lastName;
-    this.updatedApplicant.email = applicant.email;
-    this.updatedApplicant.phone = applicant.phone ?? '';
-    this.updatedApplicant.linkedInUrl = applicant.linkedInUrl ?? '';
-    this.updatedApplicant.skype = applicant.skype ?? '';
-    this.updatedApplicant.experience = applicant.experience ?? 0;
-    this.updatedApplicant.experienceDescription = applicant.experienceDescription;
-    this.updatedApplicant.skills = applicant.skills;
-    this.updatedApplicant.tags.id = applicant.tags.id;
+    this.updatedApplicant = {
+      id: applicant.id,
+      firstName: applicant.firstName,
+      lastName: applicant.lastName,
+      email: applicant.email,
+      phone: applicant.phone ?? '',
+      linkedInUrl: applicant.linkedInUrl ?? '',
+      experience: applicant.experience ?? 0,
+      creationDate: applicant.creationDate,
+      experienceDescription: applicant.experienceDescription,
+      skills: applicant.skills,
+      tags: {
+        id: applicant.tags.id,
+        tagDtos: [],
+        elasticType: 1,
+      },
+      hasCv: applicant.hasCv,
+      hasPhoto: applicant.hasPhoto,
+      cv: null,
+      photo: null,
+    };
     Object.assign<Tag[], Tag[]>(this.updatedApplicant.tags.tagDtos, applicant.tags.tagDtos);
-    this.updatedApplicant.hasCv = applicant.hasCv;
   }
 
   public updateApplicant(): void {
@@ -93,6 +84,10 @@ export class UpdateApplicantComponent implements OnDestroy {
 
   public uploadApplicantCv(files: File[]): void {
     this.updatedApplicant.cv = files[0];
+  }
+
+  public uploadApplicantPhoto(files: File[]): void {
+    this.updatedApplicant.photo = files[0];
   }
 
   public ngOnDestroy(): void {
