@@ -74,6 +74,8 @@ services:
     env_file: 
       - ../.env/ats_vault_client.env
       - ../.env/ats_database.env
+    volumes:
+      - ..:/app/
 
 volumes:
   ats_database-data: {}
