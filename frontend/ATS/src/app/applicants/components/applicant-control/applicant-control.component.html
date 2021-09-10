@@ -18,8 +18,8 @@
     <mat-option (click)="openVacancyAddModal()">
         <mat-icon>add</mat-icon>Apply Vacancy
     </mat-option>
-    <mat-option *ngIf="isCvAvailable" (click)="openCv()">
-        <mat-icon>open_in_new</mat-icon>Open CV
+    <mat-option *ngIf="isCvAvailable" (click)="openCvListDialog()">
+        <mat-icon>open_in_new</mat-icon>Open CVs
     </mat-option>
     <mat-option (click)="openHistory()">
         <mat-icon>history</mat-icon>Show history

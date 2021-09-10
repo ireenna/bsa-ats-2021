@@ -61,25 +61,33 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostApplicantAsync([FromForm] string body, [FromForm] IFormFile cvFile = null)
+        public async Task<IActionResult> PostApplicantAsync([FromForm] string body, [FromForm] IFormFile[] cvFiles)
         {
             var createApplicantDto = JsonConvert.DeserializeObject<CreateApplicantDto>(body);
 
-            var cvFileDto = cvFile != null ? new FileDto(cvFile.OpenReadStream(), cvFile.FileName) : null;
+            var cvFileDtos = new List<FileDto>();
+            foreach(var cvFile in cvFiles)
+            {
+                cvFileDtos.Add(new FileDto(cvFile.OpenReadStream(), cvFile.FileName));
+            }
 
-            var query = new CreateApplicantCommand(createApplicantDto!, cvFileDto);
+            var query = new CreateApplicantCommand(createApplicantDto!, cvFileDtos);
 
             return Ok(await Mediator.Send(query));
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutApplicantAsync([FromForm] string body, [FromForm] IFormFile cvFile = null)
+        public async Task<IActionResult> PutApplicantAsync([FromForm] string body, [FromForm] IFormFile[] cvFiles)
         {
             var updateApplicantDto = JsonConvert.DeserializeObject<UpdateApplicantDto>(body);
 
-            var cvFileDto = cvFile != null ? new FileDto(cvFile.OpenReadStream(), cvFile.FileName) : null;
+            var cvFileDtos = new List<FileDto>();
+            foreach (var cvFile in cvFiles)
+            {
+                cvFileDtos.Add(new FileDto(cvFile.OpenReadStream(), cvFile.FileName));
+            }
 
-            var query = new UpdateApplicantCommand(updateApplicantDto!, cvFileDto);
+            var query = new UpdateApplicantCommand(updateApplicantDto!, cvFileDtos.ToArray());
 
             return Ok(await Mediator.Send(query));
         }
@@ -98,20 +106,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id}/cv")]
-        public async Task<IActionResult> GetApplicantCvAsync(string id)
+        public async Task<IActionResult> GetApplicantCvsAsync(string id)
         {
-            var query = new GetApplicantCvUrlQuery(id);
-
-            return Ok(await Mediator.Send(query));
-        }
-
-        [HttpPut("{id}/cv")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> UpdateApplicantCvAsync(string id, [FromForm] IFormFile cvFile)
-        {
-            var cvFileDto = new FileDto(cvFile.OpenReadStream(), cvFile.FileName);
-
-            var query = new UpdateApplicantCvCommand(id, cvFileDto);
+            var query = new GetApplicantCvsQuery(id);
 
             return Ok(await Mediator.Send(query));
         }

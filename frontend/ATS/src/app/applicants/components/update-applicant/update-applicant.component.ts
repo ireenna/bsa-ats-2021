@@ -36,7 +36,7 @@ export class UpdateApplicantComponent implements OnDestroy {
       tagDtos: [],
     },
     hasCv: false,
-    cv: null,
+    cvs: null,
   };
   public allowedCvFileType = FileType.Pdf;
 
@@ -90,7 +90,7 @@ export class UpdateApplicantComponent implements OnDestroy {
   }
 
   public uploadApplicantCv(files: File[]): void {
-    this.updatedApplicant.cv = files[0];
+    this.updatedApplicant.cvs = files;
   }
 
   public ngOnDestroy(): void {

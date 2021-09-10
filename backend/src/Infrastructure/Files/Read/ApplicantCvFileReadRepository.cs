@@ -1,6 +1,7 @@
 ﻿using Domain.Interfaces.Read;
 using Infrastructure.Files.Abstraction;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Files.Read
@@ -16,14 +17,22 @@ namespace Infrastructure.Files.Read
             _applicantReadRepository = applicantReadRepository;
         }
 
-        public async Task<string> GetSignedUrlAsync(string applicantId)
+        public async Task<IEnumerable<(string id, string name, string url)>> GetSignedUrlsAsync(string applicantId)
         {
-            var applicantCvFileInfo = await _applicantReadRepository.GetCvFileInfoAsync(applicantId);
+            var urls = new List<(string id, string name, string url)>();
+            var applicantCvFileInfos = await _applicantReadRepository.GetCvFileInfosAsync(applicantId);
 
-            return await _fileReadRepository.GetSignedUrlAsync(
-                applicantCvFileInfo.Path,
-                applicantCvFileInfo.Name,
-                TimeSpan.FromMinutes(5));
+            foreach (var fileInfo in applicantCvFileInfos)
+            {
+                var fileNamePart = fileInfo.Name.Split('-')[5];
+                urls.Add((fileInfo.Id, fileNamePart, await _fileReadRepository.GetSignedUrlAsync(
+                    fileInfo.Path,
+                    fileInfo.Name,
+                    TimeSpan.FromMinutes(5)))
+                );
+            }
+
+            return urls;
         }
     }
 }

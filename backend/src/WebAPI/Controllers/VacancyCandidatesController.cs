@@ -40,10 +40,9 @@ namespace WebAPI.Controllers
             return Ok(await Mediator.Send(command));
         }
         [HttpPost("{vacancyId}/{id}")]
-        public async Task<IActionResult> PostVacancyCandidateNoAuth(string id, string vacancyId, [FromBody] IFormFile cvFile)
+        public async Task<IActionResult> PostVacancyCandidateNoAuth(string id, string vacancyId)
         {
-            var cvFileDto = new FileDto(cvFile.OpenReadStream(), cvFile.FileName);
-            var command = new CreateVacancyCandidateNoAuthCommand(id, vacancyId, cvFileDto);
+            var command = new CreateVacancyCandidateNoAuthCommand(id, vacancyId);
 
             return Ok(await Mediator.Send(command));
         }
@@ -54,17 +53,24 @@ namespace WebAPI.Controllers
 
             return Ok(await Mediator.Send(command));
         }
-        [HttpPost("{id}/cv")]
-        public async Task<IActionResult> PostCandidateCv(string id, [FromForm] IFormFile? cvFile)
+
+        [HttpGet("{id}/cv")]
+        public async Task<IActionResult> GetCandidateCvs(string id)
         {
-            var cvFileDto = cvFile != null ? new FileDto(cvFile.OpenReadStream(), cvFile.FileName) : null;
-            var command = new UploadCvForCandidateCommand(id, cvFileDto);
+            var query = new GetCandidateCvsQuery(id);
+            return Ok(await Mediator.Send(query));
+        }
+
+        [HttpPost("{id}/cv")]
+        public async Task<IActionResult> AttachCandidateCv(string id, [FromBody] CvFileIdDto cvFileId)
+        {
+            var command = new AttachCvForCandidateCommand(id, cvFileId.CvFileId);
 
             return Ok(await Mediator.Send(command));
         }
 
         [HttpDelete("{id}/cv")]
-        public async Task<IActionResult> DeleteCandidateCv(string id)
+        public async Task<IActionResult> DetachCandidateCv(string id)
         {
             var command = new DeleteCandidateCvCommand(id);
             return Ok(await Mediator.Send(command));

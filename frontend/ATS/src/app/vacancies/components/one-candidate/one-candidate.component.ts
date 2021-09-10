@@ -6,7 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 // eslint-disable-next-line
 import { AvatarModalComponent } from 'src/app/shared/components/avatar-modal/avatar-modal.component';
 import { FileInputComponent } from 'src/app/shared/components/file-input/file-input.component';
-import { UploadCvComponent } from 'src/app/shared/components/upload-cv/upload-cv.component';
+import { SelectCvComponent } from 'src/app/shared/components/select-cv/select-cv.component';
 import { FileType } from 'src/app/shared/enums/file-type.enum';
 import { FullVacancyCandidate } from 'src/app/shared/models/vacancy-candidates/full';
 import { NotificationService } from 'src/app/shared/services/notification.service';
@@ -67,8 +67,8 @@ export class OneCandidateComponent implements OnInit, OnDestroy {
       );
   }
 
-  public openCvUploadDialog(): void {
-    let dialogRef = this.dialog.open(UploadCvComponent, {
+  public openCvSelectDialog(): void {
+    let dialogRef = this.dialog.open(SelectCvComponent, {
       width: '600px',
       data: this.id,
     });
@@ -81,17 +81,17 @@ export class OneCandidateComponent implements OnInit, OnDestroy {
       });
   }
 
-  public deleteCv(): void {
-    this.candidateCvService.deleteCv(this.id)
+  public detachCv(): void {
+    this.candidateCvService.detachCv(this.id)
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(() => {
         this.data.cvName = undefined;
         this.data.cvLink = undefined;
-        this.notificationService.showSuccessMessage('The cv was successfully deleted', 'Success');
+        this.notificationService.showSuccessMessage('The cv was successfully detached', 'Success');
       },
       (error: Error) => {
         this.notificationService.showErrorMessage(error.message,
-          'An error occured while deleting the cv');
+          'An error occured while detaching the cv');
       });
   }
 }

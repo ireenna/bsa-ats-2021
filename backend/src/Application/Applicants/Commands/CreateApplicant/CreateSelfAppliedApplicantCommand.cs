@@ -18,13 +18,13 @@ namespace Application.Applicants.Commands.CreateApplicant
     public class CreateSelfAppliedApplicantCommand : IRequest<ApplicantDto>
     {
         public CreateApplicantDto ApplicantDto { get; set; }
-        public FileDto CvFileDto { get; set; }
+        public List<FileDto> CvFileDtos { get; set; }
         public string VacancyId { get; set; }
 
-        public CreateSelfAppliedApplicantCommand(CreateApplicantDto applicantDto, FileDto cvFileDto, string vacancyId)
+        public CreateSelfAppliedApplicantCommand(CreateApplicantDto applicantDto, List<FileDto> cvFileDtos, string vacancyId)
         {
             ApplicantDto = applicantDto;
-            CvFileDto = cvFileDto;
+            CvFileDtos = cvFileDtos;
             VacancyId = vacancyId;
         }
     }
@@ -68,9 +68,11 @@ namespace Application.Applicants.Commands.CreateApplicant
                 LinkedInUrl = command.ApplicantDto.LinkedInUrl,
                 CompanyId = vacancy.CompanyId,
                 IsSelfApplied = true,
-                CreationDate = DateTime.Now
+                CreationDate = DateTime.Now,
+                CvFileInfos = new List<FileInfo>()
             };
 
+            await UploadFileInfosIfAnyExists(applicant, command);
             await _applicantWriteRepository.CreateFullAsync(applicant);
 
             var createdApplicant = _mapper.Map<Applicant, ApplicantDto>(applicant);
@@ -80,6 +82,20 @@ namespace Application.Applicants.Commands.CreateApplicant
             createdApplicant.Vacancies = new List<ApplicantVacancyInfoDto>();
 
             return createdApplicant;
+        }
+
+        private async Task UploadFileInfosIfAnyExists(Applicant applicant, CreateSelfAppliedApplicantCommand command)
+        {
+            if (command.CvFileDtos.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var cvFileDto in command.CvFileDtos)
+            {
+                var uploadedCvFileInfo = await _applicantCvFileWriteRepository.UploadAsync(applicant.Id, cvFileDto.FileName, cvFileDto!.Content);
+                applicant.CvFileInfos.Add(uploadedCvFileInfo);
+            }
         }
 
         private async Task CreateElasticEntityAndAddTagsIfExist(ApplicantDto createdApplicant, CreateSelfAppliedApplicantCommand command)

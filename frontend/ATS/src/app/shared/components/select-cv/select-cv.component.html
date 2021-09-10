@@ -1,0 +1,20 @@
+<div class="dialog-header-bar">
+    <h1 mat-dialog-header>Candidate`s cv file selecting</h1>
+    <mat-dialog-actions>
+        <mat-icon mat-dialog-close>close</mat-icon>
+    </mat-dialog-actions>
+</div>
+<form #cvSelectForm>
+  <mat-form-field appearance="fill">
+    <mat-label>CV file</mat-label>
+    <mat-select #cvSelect required>
+      <mat-option>--</mat-option>
+      <mat-option *ngFor="let cv of cvFiles" [value]="cv">
+        {{cv.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</form>
+<div class="attach-btn" mat-dialog-actions align="start">
+    <button mat-button [disabled]="cvSelectForm.hasErrors" (click)="attachCv(cvSelect.value.id)">Attach CV</button>
+</div>

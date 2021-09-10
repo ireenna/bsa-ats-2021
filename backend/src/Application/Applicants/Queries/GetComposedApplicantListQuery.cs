@@ -7,6 +7,9 @@ using Application.Applicants.Dtos;
 using Domain.Interfaces.Abstractions;
 using Domain.Interfaces.Read;
 using System;
+using Application.Common.Queries;
+using Application.ElasticEnities.Dtos;
+using AutoMapper;
 
 namespace Application.Applicants.Queries
 {
@@ -15,23 +18,35 @@ namespace Application.Applicants.Queries
 
     public class GetComposedApplicantListQueryHandler : IRequestHandler<GetComposedApplicantListQuery, IEnumerable<ApplicantDto>>
     {
-        private readonly IApplicantReadRepository _applicantRepository;
+        private readonly IApplicantReadRepository _applicantReadRepository;
         private readonly ISender _mediator;
+        private readonly IMapper _mapper;
         
-        public GetComposedApplicantListQueryHandler(IApplicantReadRepository applicantRepository, ISender mediator)
+        public GetComposedApplicantListQueryHandler(
+            IApplicantReadRepository applicantRepository,
+            ISender mediator, 
+            IMapper mapper)
         {
             _mediator = mediator;
-            _applicantRepository = applicantRepository;
+            _applicantReadRepository = applicantRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<ApplicantDto>> Handle(GetComposedApplicantListQuery query, CancellationToken _)
         {
-            var applicantList = await _applicantRepository.GetCompanyApplicants();
+            var applicantList = await _applicantReadRepository.GetCompanyApplicants();
             var applicantResultList = new List<ApplicantDto>();
 
             foreach (var applicant in applicantList)
             {
-                applicantResultList.Add(await _mediator.Send(new GetComposedApplicantQuery(applicant.Id)));
+                var tagsQueryTask = _mediator.Send(new GetElasticDocumentByIdQuery<ElasticEnitityDto>(applicant.Id));
+
+                var applicantDto = _mapper.Map<ApplicantDto>(applicant);
+
+                applicantDto.Tags = await tagsQueryTask;
+                applicantDto.Vacancies = _mapper.Map<IEnumerable<ApplicantVacancyInfoDto>>(await _applicantReadRepository.GetApplicantVacancyInfoListAsync(applicant.Id));
+
+                applicantResultList.Add(applicantDto);
             }
 
             return applicantResultList;

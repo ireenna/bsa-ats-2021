@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Application.Common.Files.Dtos
 {
-    public class CvFileInfoDto
+    public class CvFileIdDto
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Url { get; set; }
+        public string CvFileId { get; set; }
     }
 }

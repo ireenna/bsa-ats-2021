@@ -7,7 +7,9 @@ namespace Domain.Entities
         public string Name { get; set; }
         public string Path { get; set; }
         public string PublicUrl { get; set; }
+        public string ApplicantId { get; set; }
 
+        public Applicant Applicant { get; set; }
         public VacancyCandidate VacancyCandidate { get; set; }
     }
 }

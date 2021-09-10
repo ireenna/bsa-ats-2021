@@ -2,6 +2,7 @@ using System;
 using Application.Common.Models;
 using System.Collections.Generic;
 using Application.ElasticEnities.Dtos;
+using Application.Common.Files.Dtos;
 
 namespace Application.Applicants.Dtos
 {
@@ -17,6 +18,7 @@ namespace Application.Applicants.Dtos
         public DateTime CreationDate { get; set; }
 
         public IEnumerable<ApplicantVacancyInfoDto> Vacancies { get; set; }
+        public IEnumerable<CvFileInfoDto> CvFileInfos { get; set; }
         public ElasticEnitityDto Tags { get; set; }
     }
 }

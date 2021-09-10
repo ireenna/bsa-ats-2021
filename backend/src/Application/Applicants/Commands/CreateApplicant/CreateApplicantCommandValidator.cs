@@ -8,9 +8,9 @@ namespace Application.Applicants.Commands
     {
         public CreateApplicantCommandValidator()
         {
-            RuleFor(_ => _.CvFileDto)
-                .ExtensionMustBeInList(new FileExtension[] { FileExtension.Pdf })
-                .When(_ => _.CvFileDto != null);
+            //RuleFor(_ => _.CvFileDtos)
+            //    .ExtensionMustBeInList(new FileExtension[] { FileExtension.Pdf })
+            //    .When(_ => _.CvFileDtos != null);
         }
     }
 }

@@ -1,6 +1,9 @@
 using AutoMapper;
 using Application.Applicants.Dtos;
 using Domain.Entities;
+using System.Linq;
+using Application.Common.Files.Dtos;
+using System.Collections.Generic;
 
 namespace Application.Applicants.Profiles
 {
@@ -9,7 +12,9 @@ namespace Application.Applicants.Profiles
         public ApplicantProfile()
         {
             CreateMap<ApplicantDto, Applicant>();
-            CreateMap<Applicant, ApplicantDto>();
+            CreateMap<Applicant, ApplicantDto>()
+                .ForMember(dest => dest.CvFileInfos, opt =>
+                    opt.MapFrom(src => src.CvFileInfos != null ? src.CvFileInfos.ToArray() : null));
             CreateMap<Applicant, GetShortApplicantDto>();
             CreateMap<Applicant, ApplicantCsvGetDto>();
             

@@ -30,6 +30,16 @@
     }
 }
 
-.upload-btn {
+:host ::ng-deep .mat-form-field {
+    width: 100%;
+
+    .mat-form-field-wrapper .mat-form-field-flex {
+        background: none;
+        height: 32px;
+        font-size: 1.2em;
+    }
+}
+
+.attach-btn {
     margin: 20px 0 10px;
 }

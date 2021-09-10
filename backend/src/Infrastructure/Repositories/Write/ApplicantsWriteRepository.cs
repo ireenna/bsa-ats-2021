@@ -58,6 +58,10 @@ namespace Infrastructure.Repositories.Write
             _context.RemoveRange(candidates);
             await _context.SaveChangesAsync();
 
+            var fileInfos = _context.Set<FileInfo>().Where(_ => _.ApplicantId == id);
+            _context.RemoveRange(fileInfos);
+            await _context.SaveChangesAsync();
+
             var applicantToPools = _context.Set<PoolToApplicant>().Where(_ => _.ApplicantId == id);
             _context.RemoveRange(applicantToPools);
             await _context.SaveChangesAsync();

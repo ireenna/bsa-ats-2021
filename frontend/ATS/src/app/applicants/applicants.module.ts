@@ -32,6 +32,7 @@ import { StartCvParsingModalComponent }
   from './components/start-cv-parsing-modal/start-cv-parsing-modal.component';
 import { CvParsingStartedModalComponent }
   from './components/cv-parsing-started-modal/cv-parsing-started-modal.component';
+import { CvListComponent } from './components/cv-list/cv-list.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { CvParsingStartedModalComponent }
     CreateApplicantFromVariantsComponent,
     StartCvParsingModalComponent,
     CvParsingStartedModalComponent,
+    CvListComponent,
   ],
   imports: [
     BrowserModule,

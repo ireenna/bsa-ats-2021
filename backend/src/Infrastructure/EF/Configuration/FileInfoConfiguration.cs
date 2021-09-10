@@ -15,6 +15,12 @@ namespace Infrastructure.EF.Configuration
                 .HasForeignKey<VacancyCandidate>(c => c.CvFileInfoId)
                 .HasConstraintName("candidate_fileInfo_FK")
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(f => f.Applicant)
+                .WithMany(a => a.CvFileInfos)
+                .HasForeignKey(c => c.ApplicantId)
+                .HasConstraintName("applicant_fileInfo_FK")
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

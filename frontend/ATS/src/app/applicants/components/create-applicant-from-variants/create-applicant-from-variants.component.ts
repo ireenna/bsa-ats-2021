@@ -35,7 +35,7 @@ export class CreateApplicantFromVariantsComponent implements OnDestroy {
       elasticType: 1,
       tagDtos: [],
     },
-    cv: null,
+    cvs: null,
   };
 
   public allowedCvFileType = FileType.Pdf;
@@ -89,7 +89,7 @@ export class CreateApplicantFromVariantsComponent implements OnDestroy {
   }
 
   public uploadApplicantCv(files: File[]): void {
-    this.createdApplicant.cv = files[0];
+    this.createdApplicant.cvs = files;
   }
 
   public ngOnDestroy(): void {

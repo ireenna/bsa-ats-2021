@@ -23,6 +23,7 @@ import { UpdateApplicantComponent } from '../update-applicant/update-applicant.c
 import { VacancyWithRecentActivity }
   from 'src/app/shared/models/candidate-to-stages/vacancy-with-recent-activity';
 import { ApplicantHistoryComponent } from '../applicant-history/applicant-history.component';
+import { CvListComponent } from '../cv-list/cv-list.component';
 
 @Component({
   selector: 'app-applicant-control',
@@ -147,26 +148,14 @@ export class ApplicantControlComponent implements OnDestroy {
     });
   }
 
-  public openCv(): void {
-    this.loading = true;
-
-    this.applicantsService
-      .getCv(this.applicant!.id)
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(
-        (cvFile) => {
-          this.loading = false;
-          openFileFromUrl(cvFile.url);
-        },
-        (error: Error) => {
-          this.loading = false;
-
-          this.notificationsService.showErrorMessage(
-            error.message,
-            'Cannot download cv',
-          );
-        },
-      );
+  public openCvListDialog(): void {
+    this.dialog.open(CvListComponent, {
+      width: '600px',
+      maxHeight: '40vh',
+      height: 'min-content',
+      autoFocus: false,
+      data: this.applicant!.id,
+    });
   }
 
   public openHistory(): void {

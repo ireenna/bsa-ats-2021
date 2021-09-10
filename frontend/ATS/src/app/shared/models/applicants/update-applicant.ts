@@ -11,7 +11,7 @@ export interface UpdateApplicant {
   experienceDescription?: string;
   skills?: string;
   hasCv: boolean;
-  cv: File | null;
+  cvs: File[] | null;
 
   tags: ElasticEntity;
 }

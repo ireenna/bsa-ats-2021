@@ -47,9 +47,9 @@
             <mat-icon>insert_drive_file</mat-icon>
             <span>{{ data.cvName }}</span>
           </a>
-          <mat-icon class="delete-cv-btn" (click)="deleteCv()">delete</mat-icon>
+          <mat-icon class="delete-cv-btn" (click)="detachCv()">delete</mat-icon>
         </div>
-        <p *ngIf="!data.cvLink" class="upload_cv_btn" (click)="openCvUploadDialog()"><mat-icon>attach_file</mat-icon><span>Upload CV</span></p>
+        <p *ngIf="!data.cvLink" class="upload_cv_btn" (click)="openCvSelectDialog()"><mat-icon>attach_file</mat-icon><span>Attach CV</span></p>
       </div>
       <mat-divider></mat-divider>
       <div class="experience block">

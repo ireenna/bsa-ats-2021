@@ -62,13 +62,17 @@ namespace WebAPI.Controllers
 
 
         [HttpPost("csvApplicant")]
-        public async Task<IActionResult> PostCsvApplicantAsync([FromForm] string body, [FromForm] IFormFile cvFile = null)
+        public async Task<IActionResult> PostCsvApplicantAsync([FromForm] string body, [FromForm] IFormFile[] cvFiles)
         {
             var createApplicantDto = JsonConvert.DeserializeObject<CreateApplicantDto>(body);
 
-            var cvFileDto = cvFile != null ? new FileDto(cvFile.OpenReadStream(), cvFile.FileName) : null;
+            var cvFileDtos = new List<FileDto>();
+            foreach (var cvFile in cvFiles)
+            {
+                cvFileDtos.Add(new FileDto(cvFile.OpenReadStream(), cvFile.FileName));
+            }
 
-            var query = new CreateCsvApplicantCommand(createApplicantDto!, cvFileDto);
+            var query = new CreateCsvApplicantCommand(createApplicantDto!, cvFileDtos);
 
             return Ok(await Mediator.Send(query));
         }

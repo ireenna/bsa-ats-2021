@@ -19,18 +19,12 @@ namespace Infrastructure.Files.Read
             _applicantReadRepository = applicantReadRepository;
         }
 
-        public Task<FileInfo> UploadAsync(string applicantId, Stream cvFileContent)
+        public Task<FileInfo> UploadAsync(string applicantId, string cvFileName, Stream cvFileContent)
         {
             return _fileWriteRepository.UploadPrivateFileAsync(
                 GetFilePath(),
-                GetFileName(applicantId),
+                GetFileName(applicantId, cvFileName),
                 cvFileContent);
-        }
-
-        public async Task UpdateAsync(string applicantId, Stream cvFileContent)
-        {
-            var cvFileInfo = await _applicantReadRepository.GetCvFileInfoAsync(applicantId);
-            await _fileWriteRepository.UpdateFileAsync(cvFileInfo, cvFileContent);
         }
 
         public async Task DeleteAsync(FileInfo cvFileInfo)
@@ -43,9 +37,9 @@ namespace Infrastructure.Files.Read
             return "applicants";
         }
 
-        private static string GetFileName(string applicantId)
+        private static string GetFileName(string applicantId, string cvFileName)
         {
-            return $"{applicantId}-cv.pdf";
+            return $"{applicantId}-{cvFileName}-cv.pdf";
         }
     }
 }

@@ -55,8 +55,7 @@ import { PlaceholdersEditComponent } from '../users/components/placeholders/plac
 import { AvatarModalComponent } from './components/avatar-modal/avatar-modal.component';
 import { TableFilterComponent } from './components/table-filter/table-filter.component';
 import { MarkBarComponent } from './components/mark-bar/mark-bar.component';
-import { UploadCvComponent } from './components/upload-cv/upload-cv.component';
-import { CandidateCvService } from './services/candidate-cv.service';
+import { SelectCvComponent } from './components/select-cv/select-cv.component';
 
 @NgModule({
   exports: [
@@ -176,7 +175,7 @@ import { CandidateCvService } from './services/candidate-cv.service';
     AvatarModalComponent,
     TableFilterComponent,
     MarkBarComponent,
-    UploadCvComponent,
+    SelectCvComponent,
   ],
 })
 export class SharedModule {}

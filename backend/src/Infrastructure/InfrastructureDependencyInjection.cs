@@ -150,7 +150,6 @@ namespace Infrastructure
 
             services.AddScoped<IMailAttachmentFileWriteRepository, MailAttachmentFileWriteRepository>();
 
-            services.AddScoped<ICandidateCvWriteRepository, CandidateCvWriteRepository>();
 
             return services;
         }
@@ -178,7 +177,7 @@ namespace Infrastructure
             services.AddScoped<IApplicantsWriteRepository, ApplicantsWriteRepository>();
             services.AddScoped<IApplicantsFromCsvWriteRepository, ApplicantsFromCsvWriteRepository>();
 
-            services.AddScoped<IWriteRepository<FileInfo>, WriteRepository<FileInfo>>();
+            services.AddScoped<IWriteRepository<FileInfo>, FileInfoWriteRepository>();
             services.AddScoped<IElasticWriteRepository<ElasticEntity>, ElasticWriteRepository<ElasticEntity>>();
             services.AddScoped<IWriteRepository<VacancyCandidate>, WriteRepository<VacancyCandidate>>();
             services.AddScoped<IWriteRepository<CandidateToStage>, CandidateToStageWriteRepository>();

@@ -157,7 +157,7 @@ export class SelfApplyingComponent {
   }
 
   public uploadApplicantCv(files: File[]): void {
-    this.applicant.cv = files[0];
+    this.applicant.cvs = files;
   }
 
   public createApplicant(): void {

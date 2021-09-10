@@ -8,6 +8,6 @@ namespace Domain.Interfaces.Read
 {
     public interface ICandidateCvReadRepository
     {
-        Task<string> GetSignedUrlAsync(string applicantId);
+        Task<string> GetSignedUrlAsync(string candidateId);
     }
 }

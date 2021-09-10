@@ -53,6 +53,7 @@ namespace Application.VacancyCandidates.Queries
             if (candidate.CvFileInfoId != null)
             {
                 candidate.CvFileInfo = await _fileInfoReadRepository.GetAsync(candidate.CvFileInfoId);
+                candidate.CvFileInfo.Name = candidate.CvFileInfo.Name.Split('-')[5];
                 candidate.CvFileInfo.PublicUrl = await _candidateCvReadRepository.GetSignedUrlAsync(candidate.Id);
             }
             VacancyCandidateFullDto candidateFullDto = _mapper.Map<VacancyCandidate, VacancyCandidateFullDto>(candidate);

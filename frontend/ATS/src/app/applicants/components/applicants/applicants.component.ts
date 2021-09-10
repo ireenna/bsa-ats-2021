@@ -166,7 +166,7 @@ export class ApplicantsComponent implements OnInit, OnDestroy, AfterViewInit {
 
           this.loading = false;
           this.dataSource.data = result;
-            
+
           this.cashedData = result;
           this.renewFilterDescription();
           this.directive!.applyFilter$.emit();

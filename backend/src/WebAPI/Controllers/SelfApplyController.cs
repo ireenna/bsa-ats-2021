@@ -42,17 +42,21 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("{vacancyId}")]
-        public async Task<IActionResult> PostSelfAppliedApplicantAsync(string vacancyId, [FromForm] string body, [FromForm] IFormFile cvFile = null)
+        public async Task<IActionResult> PostSelfAppliedApplicantAsync(string vacancyId, [FromForm] string body, [FromForm] IFormFile[] cvFiles)
         {
             var createApplicantDto = JsonConvert.DeserializeObject<CreateApplicantDto>(body);
 
-            var cvFileDto = cvFile != null ? new FileDto(cvFile.OpenReadStream(), cvFile.FileName) : null;
+            var cvFileDtos = new List<FileDto>();
+            foreach (var cvFile in cvFiles)
+            {
+                cvFileDtos.Add(new FileDto(cvFile.OpenReadStream(), cvFile.FileName));
+            }
 
-            var commandApplicant = new CreateSelfAppliedApplicantCommand(createApplicantDto!, cvFileDto, vacancyId);
+            var commandApplicant = new CreateSelfAppliedApplicantCommand(createApplicantDto!, cvFileDtos, vacancyId);
 
             var applicant = await Mediator.Send(commandApplicant);
 
-            var commandCandidate = new CreateVacancyCandidateNoAuthCommand(applicant.Id, vacancyId, cvFileDto);
+            var commandCandidate = new CreateVacancyCandidateNoAuthCommand(applicant.Id, vacancyId);
 
             return Ok(await Mediator.Send(commandCandidate));
         }

@@ -9,6 +9,7 @@ using Domain.Interfaces.Abstractions;
 using Domain.Interfaces.Write;
 using MediatR;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,12 +18,12 @@ namespace Application.Applicants.Commands.CreateApplicant
     public class CreateCsvApplicantCommand : IRequest<ApplicantCsvGetDto>
     {
         public CreateApplicantDto ApplicantDto { get; set; }
-        public FileDto? CvFileDto { get; set; }
+        public List<FileDto> CvFileDtos { get; set; }
 
-        public CreateCsvApplicantCommand(CreateApplicantDto applicantDto, FileDto? cvFileDto)
+        public CreateCsvApplicantCommand(CreateApplicantDto applicantDto, List<FileDto> cvFileDtos)
         {
             ApplicantDto = applicantDto;
-            CvFileDto = cvFileDto;
+            CvFileDtos = cvFileDtos;
         }
     }
 
@@ -65,9 +66,11 @@ namespace Application.Applicants.Commands.CreateApplicant
                 ExperienceDescription = command.ApplicantDto.ExperienceDescription,
                 Skills = command.ApplicantDto.Skills,
                 CompanyId = creatorUser.CompanyId,
-                CreationDate = DateTime.Now
+                CreationDate = DateTime.Now,
+                CvFileInfos = new List<FileInfo>()
             };
 
+            await UploadFileInfosIfAnyExists(applicant, command);
             await _applicantWriteRepository.CreateAsync(applicant);
 
             var createdApplicant = _mapper.Map<ApplicantCsvGetDto>(applicant);
@@ -75,6 +78,19 @@ namespace Application.Applicants.Commands.CreateApplicant
             createdApplicant.User = creatorUser;
 
             return createdApplicant;
+        }
+        private async Task UploadFileInfosIfAnyExists(Applicant applicant, CreateCsvApplicantCommand command)
+        {
+            if (command.CvFileDtos.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var cvFileDto in command.CvFileDtos)
+            {
+                var uploadedCvFileInfo = await _applicantCvFileWriteRepository.UploadAsync(applicant.Id, cvFileDto.FileName, cvFileDto!.Content);
+                applicant.CvFileInfos.Add(uploadedCvFileInfo);
+            }
         }
     }
 }

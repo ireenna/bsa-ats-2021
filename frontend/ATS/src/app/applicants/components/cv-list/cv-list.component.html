@@ -1,0 +1,13 @@
+<div class="dialog-header">
+    <mat-icon mat-dialog-close class="close-btn">arrow_back</mat-icon>
+    <h1 mat-dialog-title>Applicant CVs</h1>
+</div>
+<mat-list>
+    <mat-divider></mat-divider>
+    <mat-list-item *ngFor="let file of cvFiles">
+        <mat-icon mat-list-icon (click)="openCv(file.url)">insert_drive_file</mat-icon>
+        <div mat-line (click)="openCv(file.url)">{{ file.name }}</div>
+        <mat-icon class="delete-btn" (click)="deleteCv(file.id)">delete</mat-icon>
+        <mat-divider></mat-divider>
+    </mat-list-item>
+</mat-list>

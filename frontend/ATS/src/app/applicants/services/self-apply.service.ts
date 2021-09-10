@@ -30,8 +30,8 @@ export class SelfApplyService {
     vacancyId: string): Observable<Applicant> {
     const formData = new FormData();
     formData.append('body', JSON.stringify(createApplicant));
-    if (createApplicant.cv) {
-      formData.append('cvFile', createApplicant.cv, createApplicant.cv.name);
+    if (createApplicant.cvs) {
+      createApplicant.cvs.forEach(f => formData.append('cvFiles', f));
     }
     return this.httpService.postRequest<Applicant>(`/SelfApply/${vacancyId}`, formData);
   }

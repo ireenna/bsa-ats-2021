@@ -6,10 +6,10 @@ import { Applicant } from '../models/applicants/applicant';
 import { HttpClientService } from './http-client.service';
 import { MarkedApplicant } from 'src/app/shared/models/applicants/marked-applicant';
 import { GetShortApplicant } from '../models/applicants/get-short-applicant';
-import { FileUrl } from '../models/file/file';
 import { CsvApplicant } from 'src/app/applicants/models/CsvApplicant';
 import { VacancyWithRecentActivity }
   from '../models/candidate-to-stages/vacancy-with-recent-activity';
+import { CvFileInfo } from '../models/file/cvFileInfo';
 
 @Injectable({ providedIn: 'root' })
 export class ApplicantsService {
@@ -30,8 +30,8 @@ export class ApplicantsService {
   public addApplicant(createApplicant: CreateApplicant): Observable<Applicant> {
     const formData = new FormData();
     formData.append('body', JSON.stringify(createApplicant));
-    if (createApplicant.cv) {
-      formData.append('cvFile', createApplicant.cv, createApplicant.cv.name);
+    if (createApplicant.cvs) {
+      createApplicant.cvs.forEach((f) => formData.append('cvFiles', f));
     }
     return this.httpClient.postRequest<Applicant>('/applicants', formData);
   }
@@ -39,8 +39,8 @@ export class ApplicantsService {
   public updateApplicant(updateApplicant: UpdateApplicant): Observable<Applicant> {
     const formData = new FormData();
     formData.append('body', JSON.stringify(updateApplicant));
-    if (updateApplicant.cv) {
-      formData.append('cvFile', updateApplicant.cv, updateApplicant.cv.name);
+    if (updateApplicant.cvs) {
+      updateApplicant.cvs.forEach((f) => formData.append('cvFiles', f));
     }
     return this.httpClient.putRequest<Applicant>('/applicants', formData);
   }
@@ -51,8 +51,8 @@ export class ApplicantsService {
     );
   }
 
-  public getCv(applicantId: string): Observable<FileUrl> {
-    return this.httpClient.getRequest<FileUrl>(`/applicants/${applicantId}/cv`);
+  public getCv(applicantId: string): Observable<CvFileInfo[]> {
+    return this.httpClient.getRequest<CvFileInfo[]>(`/applicants/${applicantId}/cv`);
   }
 
   public getApplicantByEmail(email: string): Observable<Applicant>{

@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Domain.Interfaces.Read
 {
     public interface IApplicantCvFileReadRepository
     {
-        Task<string> GetSignedUrlAsync(string applicantId);
+        Task<IEnumerable<(string id, string name, string url)>> GetSignedUrlsAsync(string applicantId);
     }
 }
