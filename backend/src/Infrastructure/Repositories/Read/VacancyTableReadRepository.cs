@@ -2,6 +2,7 @@
 using AutoMapper;
 using Dapper;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Interfaces.Abstractions;
 using Domain.Interfaces.Read;
 using Infrastructure.Dapper.Interfaces;
@@ -29,11 +30,12 @@ namespace Infrastructure.Repositories.Read
 
             var sql =
             @"
-            SELECT distinct v.*,p.*,u.*,ur.*,r.*, CandidateCount.count
+            SELECT distinct v.*,p.*,u.*, fi.*, ur.*, r.*, CandidateCount.count
             FROM 
                 Vacancies as v left outer join
                 Projects p on p.Id = v.ProjectId inner join
-                Users U on u.Id = v.ResponsibleHrId inner join
+                Users U on u.Id = v.ResponsibleHrId left outer join
+                FileInfos fi on u.AvatarId = fi.Id inner join
                 UserToRoles ur on ur.UserId = u.Id inner join
                 Roles r on r.Id = ur.RoleId
             cross apply
@@ -45,14 +47,16 @@ namespace Infrastructure.Repositories.Read
                 AND CandidateToStages.StageId = Stages.Id AND CandidateToStages.DateRemoved IS NULL))
             ) as CandidateCount
             WHERE 
-            v.CompanyId = @id AND p.IsDeleted = 0";
+            v.CompanyId = @id 
+            AND NOT EXISTS (SELECT * FROM ArchivedEntities AS AV WHERE AV.EntityType = @entityVacancyType AND AV.EntityId = v.Id)
+            ORDER BY v.CreationDate DESC;";
 
             var vacancyDictionary = new Dictionary<string, VacancyTable>();
             var userToRolesDictionary = new Dictionary<string, UserToRole>();
 
-            var vacancy = (await connection.QueryAsync<Vacancy, Project, User, UserToRole, Role, int, VacancyTable>(
+            var vacancy = (await connection.QueryAsync<Vacancy, Project, User, FileInfo, UserToRole, Role, int, VacancyTable>(
                 sql,
-                (vacancy, project, user, userroles, role, vacancyCount) =>
+                (vacancy, project, user, fileinfo, userroles, role, vacancyCount) =>
                 {
 
                     if (!vacancyDictionary.TryGetValue(vacancy.Id, out VacancyTable vacancyEntry))
@@ -61,6 +65,7 @@ namespace Infrastructure.Repositories.Read
 
                         vacancyEntry.Project = project;
                         vacancyEntry.ResponsibleHr = user;
+                        vacancyEntry.ResponsibleHr.Avatar = fileinfo;
                         vacancyEntry.ResponsibleHr.UserRoles = new LinkedList<UserToRole>();
                         vacancyEntry.CandidatesAmount = vacancyCount;
                         vacancyDictionary.Add(vacancyEntry.Id, vacancyEntry);
@@ -79,7 +84,8 @@ namespace Infrastructure.Repositories.Read
                 },
                 new
                 {
-                    id = companyId
+                    id = companyId,
+                    entityVacancyType = EntityType.Vacancy
                 },
                     splitOn: "Id,Id,Id,Id,Id,Id,count"
                 ));

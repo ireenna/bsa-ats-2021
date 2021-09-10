@@ -70,6 +70,7 @@ namespace Application.Stages.Commands
             existedStage.Type = updateStage.Type;
             existedStage.IsReviewable = updateStage.IsReviewable;
             existedStage.Actions = updateStage.Actions;
+            existedStage.DataJson = updateStage.DataJson;
             existedStage.ReviewToStages = null;
 
             existedStage.Actions = new List<Action>();
@@ -81,7 +82,8 @@ namespace Application.Stages.Commands
                     {
                         ActionType = action.ActionType,
                         Name = action.Name,
-                        StageId = command.StageId
+                        StageId = command.StageId,
+                        StageChangeEventType = action.StageChangeEventType
                     };
                     await _writeActionRepository.CreateAsync(addedAction);
                     existedStage.Actions.Add(addedAction);

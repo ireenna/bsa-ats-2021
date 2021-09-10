@@ -42,9 +42,11 @@ import {
 } from './components/hr-lead/send-registration-link-dialog/sending-register-link-dialog.component';
 
 import { RecentActivityComponent } from './components/recent-activity/recent-activity.component';
+import { EditHrFormComponent } from './components/edit-hr-form/edit-hr-form.component';
 import { PendingRegistrationsComponent }
   from './components/hr-lead/pending-registrations/pending-registrations.component';
 import { RegistrationPermissionsService } from './services/registration-permissions.service';
+import { MyTasksComponent } from '../task-management/components/my-tasks/my-tasks.component';
 
 @NgModule({
   declarations: [
@@ -66,7 +68,9 @@ import { RegistrationPermissionsService } from './services/registration-permissi
     HomeComponent,
     VacancyCardComponent,
     RecentActivityComponent,
+    EditHrFormComponent,
     PendingRegistrationsComponent,
+    MyTasksComponent,
   ],
   imports: [UserRoutingModule, SharedModule],
   providers: [

@@ -9,7 +9,6 @@ using Domain.Entities;
 using Application.Common.Exceptions;
 using Infrastructure.Dapper.Interfaces;
 using Infrastructure.Repositories.Abstractions;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Infrastructure.Repositories.Read
 {
@@ -29,7 +28,8 @@ namespace Infrastructure.Repositories.Read
             sql.Append(" Reviews.*,");
             sql.Append(" VacancyCandidates.*,");
             sql.Append(" CandidateReviews.*,");
-            sql.Append(" Applicants.*");
+            sql.Append(" Applicants.*,");
+            sql.Append(" FileInfos.*");
             sql.Append(" FROM Vacancies");
             sql.Append(" LEFT JOIN Stages ON Stages.VacancyId = Vacancies.Id");
             sql.Append(" LEFT JOIN Reviews ON EXISTS");
@@ -45,6 +45,7 @@ namespace Infrastructure.Repositories.Read
             sql.Append(" AND CandidateToStages.DateRemoved IS NULL)");
             sql.Append(" LEFT JOIN CandidateReviews ON CandidateReviews.CandidateId = VacancyCandidates.Id");
             sql.Append(" LEFT JOIN Applicants ON VacancyCandidates.ApplicantId = Applicants.Id");
+            sql.Append(" LEFT JOIN FileInfos ON FileInfos.Id = Applicants.PhotoFileInfoId");
             sql.Append($" WHERE Vacancies.Id = @vacancyId");
 
             Dictionary<string, Stage> stageDict = new Dictionary<string, Stage>();
@@ -53,9 +54,9 @@ namespace Infrastructure.Repositories.Read
             Vacancy cachedVacancy = null;
 
             IEnumerable<Vacancy> resultAsEnumerable = await connection
-                .QueryAsync<Vacancy, Stage, Review, VacancyCandidate, CandidateReview, Applicant, Vacancy>(
+                .QueryAsync<Vacancy, Stage, Review, VacancyCandidate, CandidateReview, Applicant, FileInfo, Vacancy>(
                     sql.ToString(),
-                    (vacancy, stage, stageReview, candidate, review, applicant) =>
+                    (vacancy, stage, stageReview, candidate, review, applicant, photo) =>
                     {
                         if (cachedVacancy == null)
                         {
@@ -101,6 +102,7 @@ namespace Infrastructure.Repositories.Read
                                 }
 
                                 candidateEntry.Applicant = applicant;
+                                candidateEntry.Applicant.PhotoFileInfo = photo;
 
                                 if (review != null)
                                 {
@@ -111,8 +113,9 @@ namespace Infrastructure.Repositories.Read
 
                         return cachedVacancy;
                     },
-                     new { vacancyId = @vacancyId },
-                     splitOn: "Id,Id,Id,Id");
+                    new { vacancyId = @vacancyId },
+                    splitOn: "Id,Id,Id,Id,Id,Id"
+                );
 
             Vacancy result = resultAsEnumerable.Distinct().FirstOrDefault();
 
@@ -149,7 +152,11 @@ namespace Infrastructure.Repositories.Read
                             WHERE Stages.VacancyId = @vacancyId 
                             AND Stages.[Index]=1";
 
-            return await connection.QueryFirstOrDefaultAsync<Stage>(sql, new { vacancyId = @vacancyId });
+            var result = await connection.QueryFirstOrDefaultAsync<Stage>(sql, new { vacancyId = @vacancyId });
+
+            await connection.CloseAsync();
+
+            return result;
         }
 
 
@@ -238,6 +245,53 @@ namespace Infrastructure.Repositories.Read
 
             await connection.CloseAsync();
             return stages.First();
+        }
+
+        public async Task<Stage> GetWithActions(string id)
+        {
+            SqlConnection connection = _connectionFactory.GetSqlConnection();
+            await connection.OpenAsync();
+
+            string sql = @"SELECT *
+                FROM Stages 
+                LEFT JOIN Actions ON Actions.StageId = Stages.Id
+                WHERE Stages.Id = @id
+            ";
+
+            var stagesDictionary = new Dictionary<string, Stage>();
+
+            await connection.QueryAsync<Stage, Action, Stage>(sql, (s, a) =>
+            {
+                Stage stage;
+                if (!stagesDictionary.TryGetValue(s.Id, out stage))
+                {
+                    stagesDictionary.Add(s.Id, stage = s);
+                }
+
+                if (stage.Actions == null)
+                {
+                    stage.Actions = new List<Action>();
+                }
+
+                if (a != null)
+                {
+                    stage.Actions.Add(a);
+                }
+
+                return stage;
+            },
+            new { id = @id });
+
+            Stage stage = stagesDictionary.Values.FirstOrDefault();
+
+            if (stage == null)
+            {
+                throw new NotFoundException(typeof(Stage), id);
+            }
+
+            await connection.CloseAsync();
+
+            return stage;
         }
     }
 }

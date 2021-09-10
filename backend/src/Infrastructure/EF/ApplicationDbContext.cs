@@ -38,6 +38,10 @@ namespace Infrastructure.EF
         public DbSet<UserFollowedEntity> UserFollowedEntities { get; set; }
         public DbSet<Interview> Interviews { get; set; }
         public DbSet<UsersToInterview> UsersToInterviews { get; set; }
+        public DbSet<ArchivedEntity> ArchivedEntities { get; set; }
+
+        public DbSet<ToDoTask> ToDoTask { get; set; }
+        public DbSet<UserToTask> UserToTask { get; set; }
 
         private readonly IDomainEventService _domainEventService;
 
@@ -55,7 +59,7 @@ namespace Infrastructure.EF
         {
             if (!optionsBuilder.IsConfigured)
             {
-                string connectionString = sys::Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
+                string connectionString = "Server=localhost;Database=ATS_dev;Trusted_Connection=True;";//sys::Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
                 optionsBuilder.UseSqlServer(connectionString);
             }
         }

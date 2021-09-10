@@ -10,7 +10,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -56,6 +56,10 @@ import { AvatarModalComponent } from './components/avatar-modal/avatar-modal.com
 import { TableFilterComponent } from './components/table-filter/table-filter.component';
 import { MarkBarComponent } from './components/mark-bar/mark-bar.component';
 import { SelectCvComponent } from './components/select-cv/select-cv.component';
+import { ConfirmationDialogComponent } 
+  from './components/confirmation-dialog/confirmation-dialog.component';
+import { TimezoneDateAdapter } from './date-adapters/timezone.date-adapter';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 @NgModule({
   exports: [
@@ -101,6 +105,7 @@ import { SelectCvComponent } from './components/select-cv/select-cv.component';
     MatTooltipModule,
     TagsEditComponent,
     DeleteConfirmComponent,
+    ConfirmationDialogComponent,
     LogoBlockComponent,
     ClipboardModule,
     UserProfileComponent,
@@ -110,6 +115,8 @@ import { SelectCvComponent } from './components/select-cv/select-cv.component';
     AvatarModalComponent,
     TableFilterComponent,
     MarkBarComponent,
+    NgxMaterialTimepickerModule,
+    RouterModule,
   ],
   imports: [
     MatButtonModule,
@@ -147,9 +154,11 @@ import { SelectCvComponent } from './components/select-cv/select-cv.component';
     MatMenuModule,
     MatTooltipModule,
     ClipboardModule,
+    NgxMaterialTimepickerModule,
   ],
   providers: [
     HttpClientService,
+    { provide: DateAdapter, useClass: TimezoneDateAdapter },
   ],
   declarations: [
     MultiselectComponent,
@@ -165,6 +174,7 @@ import { SelectCvComponent } from './components/select-cv/select-cv.component';
     AddCandidateModalComponent,
     TagsEditComponent,
     DeleteConfirmComponent,
+    ConfirmationDialogComponent,
     LogoBlockComponent,
     UserProfileComponent,
     UserRoleDirective,

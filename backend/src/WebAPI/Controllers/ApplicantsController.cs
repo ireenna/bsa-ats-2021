@@ -13,7 +13,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,7 +60,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostApplicantAsync([FromForm] string body, [FromForm] IFormFile[] cvFiles)
+        public async Task<IActionResult> PostApplicantAsync([FromForm] string body, [FromForm] IFormFile[] cvFiles, [FromForm] IFormFile photoFile = null)
         {
             var createApplicantDto = JsonConvert.DeserializeObject<CreateApplicantDto>(body);
 
@@ -71,13 +70,23 @@ namespace WebAPI.Controllers
                 cvFileDtos.Add(new FileDto(cvFile.OpenReadStream(), cvFile.FileName));
             }
 
-            var query = new CreateApplicantCommand(createApplicantDto!, cvFileDtos);
+            FileDto photoFileDto;
+            if (string.IsNullOrEmpty(createApplicantDto.PhotoLink))
+            {
+                photoFileDto = photoFile != null ? new FileDto(photoFile.OpenReadStream(), photoFile.FileName) : null;
+            }
+            else
+            {
+                photoFileDto = new FileDto(createApplicantDto.PhotoLink);
+            }
+
+            var query = new CreateApplicantCommand(createApplicantDto!, cvFileDtos, photoFileDto);
 
             return Ok(await Mediator.Send(query));
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutApplicantAsync([FromForm] string body, [FromForm] IFormFile[] cvFiles)
+        public async Task<IActionResult> PutApplicantAsync([FromForm] string body, [FromForm] IFormFile[] cvFiles, [FromForm] IFormFile photoFile = null)
         {
             var updateApplicantDto = JsonConvert.DeserializeObject<UpdateApplicantDto>(body);
 
@@ -87,7 +96,19 @@ namespace WebAPI.Controllers
                 cvFileDtos.Add(new FileDto(cvFile.OpenReadStream(), cvFile.FileName));
             }
 
-            var query = new UpdateApplicantCommand(updateApplicantDto!, cvFileDtos.ToArray());
+            FileDto photoFileDto;
+
+            if (string.IsNullOrEmpty(updateApplicantDto.PhotoLink))
+            {
+                photoFileDto = photoFile != null ? new FileDto(photoFile.OpenReadStream(), photoFile.FileName) : null;
+            }
+            else
+            {
+                photoFileDto = new FileDto(updateApplicantDto.PhotoLink);
+            }
+
+            var query = new UpdateApplicantCommand(updateApplicantDto!, cvFileDtos.ToArray(), photoFileDto);
+
 
             return Ok(await Mediator.Send(query));
         }

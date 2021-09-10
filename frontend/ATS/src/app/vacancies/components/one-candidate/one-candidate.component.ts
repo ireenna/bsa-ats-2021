@@ -8,6 +8,7 @@ import { AvatarModalComponent } from 'src/app/shared/components/avatar-modal/ava
 import { FileInputComponent } from 'src/app/shared/components/file-input/file-input.component';
 import { SelectCvComponent } from 'src/app/shared/components/select-cv/select-cv.component';
 import { FileType } from 'src/app/shared/enums/file-type.enum';
+import { getApplicantAvatar } from 'src/app/shared/helpers/avatar';
 import { FullVacancyCandidate } from 'src/app/shared/models/vacancy-candidates/full';
 import { NotificationService } from 'src/app/shared/services/notification.service';
 import { VacancyCandidateService } from 'src/app/shared/services/vacancy-candidate.service';
@@ -46,8 +47,12 @@ export class OneCandidateComponent implements OnInit, OnDestroy {
 
   public enlargeAvatar(): void {
     this.dialog.open(AvatarModalComponent, {
-      data: { url: '../../../../assets/images/defaultAvatar.png' }, // TODO: Add real url
+      data: { url: this.getAvatar() },
     });
+  }
+
+  public getAvatar(): string {
+    return getApplicantAvatar(this.data);
   }
 
   private loadData(id: string): void {

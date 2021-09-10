@@ -13,7 +13,10 @@ namespace Domain.Entities
             DomainEvents = new List<DomainEvent>();
         }
 
+        public string AvatarId { get; set; }
+        public FileInfo Avatar { get; set; }
         public string Skype { get; set; }
+        public string Slack { get; set; }
         public string Password { get; set; }
         public string PasswordSalt { get; set; }
         public string ResetPasswordToken { get; set; }
@@ -32,6 +35,7 @@ namespace Domain.Entities
         public ICollection<SkillsParsingJob> SkillsParsingJobs { get; set; }
         public ICollection<CandidateToStage> MovedCandidateToStages { get; set; }
 
+        public ICollection<UserToTask> UserTask { get; set; }
         public IList<DomainEvent> DomainEvents { get; set; }
 
     }

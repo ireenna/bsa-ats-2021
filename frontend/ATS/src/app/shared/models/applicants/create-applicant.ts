@@ -12,6 +12,7 @@ export class CreateApplicant {
   skills?: string;
   tags: ElasticEntity = new ElasticEntity();
   cvs: File[] | null = null;
+  photo: string | File | null = null;
 
   public constructor(csvApplicant: CsvApplicant | null) {
     if (csvApplicant){

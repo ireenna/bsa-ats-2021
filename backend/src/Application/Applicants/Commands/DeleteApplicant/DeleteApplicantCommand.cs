@@ -29,18 +29,21 @@ namespace Application.Applicants.Commands.DeleteApplicant
         private readonly IApplicantReadRepository _applicantReadRepository;
         private readonly IWriteRepository<Applicant> _applicantWriteRepository;
         private readonly IApplicantCvFileWriteRepository _applicantCvFileWriteRepository;
+        private readonly IApplicantPhotoFileWriteRepository _applicantPhotoFileWriteRepository;
         private readonly IMapper _mapper;
 
         public DeleteApplicantCommandHandler(
             IApplicantReadRepository applicantReadRepository,
             IWriteRepository<Applicant> applicantWriteRepository,
             IApplicantCvFileWriteRepository applicantCvFileWriteRepository,
+            IApplicantPhotoFileWriteRepository applicantPhotoFileWriteRepository,
             IMapper mapper
         )
         {
             _applicantReadRepository = applicantReadRepository;
             _applicantWriteRepository = applicantWriteRepository;
             _applicantCvFileWriteRepository = applicantCvFileWriteRepository;
+            _applicantPhotoFileWriteRepository = applicantPhotoFileWriteRepository;
             _mapper = mapper;
         }
 
@@ -49,9 +52,21 @@ namespace Application.Applicants.Commands.DeleteApplicant
             var applicant = await _applicantReadRepository.GetByIdAsync(command.Id);
 
             await _applicantWriteRepository.DeleteAsync(applicant.Id);
+
+            await DeletePhotoFileIfExists(applicant);
             var deletedApplicantDto = _mapper.Map<ApplicantDto>(applicant);
 
             return deletedApplicantDto;
+        }
+
+        private async Task DeletePhotoFileIfExists(Applicant applicant)
+        {
+            if (applicant.PhotoFileInfo == null)
+            {
+                return;
+            }
+
+            await _applicantPhotoFileWriteRepository.DeleteAsync(applicant.PhotoFileInfo);
         }
     }
 }

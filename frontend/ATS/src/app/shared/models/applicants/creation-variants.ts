@@ -8,5 +8,5 @@ export interface ApplicantCreationVariants {
   skills: string[];
   company: string[];
   birthDate: string[];
-  cv: string;
+  cvs: string;
 }

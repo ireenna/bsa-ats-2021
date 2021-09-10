@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { FormGroup } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { takeUntil } from 'rxjs/operators';
 import { Component, Inject, OnDestroy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -20,6 +20,7 @@ import { ApplicantCreationVariants } from 'src/app/shared/models/applicants/crea
 export class CreateApplicantFromVariantsComponent implements OnDestroy {
   public validationGroup: FormGroup | undefined = undefined;
   public loading: boolean = false;
+  public showAllTags: boolean = false;
 
   public createdApplicant: CreateApplicant = {
     firstName: '',
@@ -36,6 +37,7 @@ export class CreateApplicantFromVariantsComponent implements OnDestroy {
       tagDtos: [],
     },
     cvs: null,
+    photo: null,
   };
 
   public allowedCvFileType = FileType.Pdf;
@@ -49,6 +51,10 @@ export class CreateApplicantFromVariantsComponent implements OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: ApplicantCreationVariants,
   ) {
     this.validationGroup = applicantGroup;
+
+    //if (data.cv) {
+    //  this.createdApplicant.cvs = data.cvs;
+    //}
   }
 
   public createApplicant(): void {
@@ -73,8 +79,9 @@ export class CreateApplicantFromVariantsComponent implements OnDestroy {
       );
   }
 
-  public set(control: string, value: any): void {
-    this.validationGroup?.get(control)?.setValue(value);
+  public set(controlName: string, value: any): void {
+    const control: AbstractControl = this.validationGroup?.get(controlName)!;
+    control.setValue(control.value + value);
   }
 
   public addTag(tag: string): void {
@@ -84,12 +91,40 @@ export class CreateApplicantFromVariantsComponent implements OnDestroy {
     }]);
   }
 
+  public removeTag(tag: string): void {
+    const newTags = [...this.createdApplicant.tags.tagDtos];
+    const index = newTags.findIndex(t => t.tagName === tag);
+
+    if (index < 0) {
+      return;
+    }
+
+    newTags.splice(index, 1);
+    this.createdApplicant.tags.tagDtos = [...newTags];
+  }
+
+  public includesTag(tag: string): boolean {
+    return this.createdApplicant.tags.tagDtos.some(t => t.tagName === tag);
+  }
+
+  public toggleTag(tag: string): void {
+    if (this.includesTag(tag)) {
+      return this.removeTag(tag);
+    }
+
+    return this.addTag(tag);
+  }
+
   public updateTags(tags: Tag[]): void {
     this.createdApplicant.tags.tagDtos = tags;
   }
 
   public uploadApplicantCv(files: File[]): void {
     this.createdApplicant.cvs = files;
+  }
+
+  public uploadApplicantPhoto(files: File[]): void {
+    this.createdApplicant.photo = files[0];
   }
 
   public ngOnDestroy(): void {

@@ -14,17 +14,20 @@ using System.Linq;
 using Domain.Interfaces.Write;
 
 #nullable enable
+
 namespace Application.Applicants.Commands
 {
     public class UpdateApplicantCommand : IRequest<ApplicantDto>
     {
         public UpdateApplicantDto Entity { get; set; }
         public FileDto[] CvFileDtos { get; set; }
+        public FileDto? PhotoFileDto { get; set; }
 
-        public UpdateApplicantCommand(UpdateApplicantDto entity, FileDto[] cvFileDtos)
+        public UpdateApplicantCommand(UpdateApplicantDto entity, FileDto[] cvFileDtos, FileDto? photoFileDto)
         {
             Entity = entity;
             CvFileDtos = cvFileDtos;
+            PhotoFileDto = photoFileDto;
         }
     }
 
@@ -35,17 +38,20 @@ namespace Application.Applicants.Commands
         private readonly IApplicantReadRepository _repository;
         private readonly IWriteRepository<Applicant> _writeRepository;
         private readonly IApplicantCvFileWriteRepository _applicantCvFileWriteRepository;
+        private readonly IWriteRepository<FileInfo> _fileInfoWriteRepository;
 
         public UpdateApplicantCommandHandler(
             IApplicantReadRepository repository,
             IWriteRepository<Applicant> writeRepository, 
             IApplicantCvFileWriteRepository applicantCvFileWriteRepository,
+            IWriteRepository<FileInfo> fileInfoWriteRepository,
             ISender mediator,
             IMapper mapper)
         {
             _repository = repository;
             _writeRepository = writeRepository;
             _applicantCvFileWriteRepository = applicantCvFileWriteRepository;
+            _fileInfoWriteRepository = fileInfoWriteRepository;
             _mediator = mediator;
             _mapper = mapper;
         }
@@ -56,6 +62,7 @@ namespace Application.Applicants.Commands
             updatableApplicant.CvFileInfos = (await _repository.GetCvFileInfosAsync(command.Entity.Id)).ToList();
             await UploadCvFileIfExists(command, updatableApplicant);
             var updatedApplicantEntity = await _writeRepository.UpdateAsync(updatableApplicant);
+
             var updatedApplicant = _mapper.Map<ApplicantDto>(updatedApplicantEntity);
 
             var elasticQuery = new UpdateElasticDocumentCommand<UpdateApplicantToTagsDto>(
@@ -65,6 +72,8 @@ namespace Application.Applicants.Commands
             updatedApplicant.Tags = _mapper.Map<ElasticEnitityDto>(await _mediator.Send(elasticQuery));
             updatedApplicant.Vacancies = _mapper.Map<IEnumerable<ApplicantVacancyInfoDto>>
                 (await _repository.GetApplicantVacancyInfoListAsync(updatedApplicant.Id));
+            
+            await UploadPhotoFileIfExists(command, updatableApplicant);
 
             return updatedApplicant;
         }
@@ -78,9 +87,30 @@ namespace Application.Applicants.Commands
 
             foreach (var cvFile in command.CvFileDtos)
             {
-                var uploadedCvFileInfo = await _applicantCvFileWriteRepository.UploadAsync(applicant.Id, cvFile.FileName, cvFile!.Content);
+                FileInfo uploadedCvFileInfo;
+
+                if (cvFile.Link == null)
+                {
+                    uploadedCvFileInfo = await _applicantCvFileWriteRepository
+                        .UploadAsync(applicant.Id, cvFile.FileName, cvFile!.Content);
+                }
+                else
+                {
+                    uploadedCvFileInfo = await _fileInfoWriteRepository
+                        .CreateAsync(cvFile.ToFileInfo());
+                }
                 applicant.CvFileInfos.Add(uploadedCvFileInfo);
             }
+        }
+
+        private async Task UploadPhotoFileIfExists(UpdateApplicantCommand command, Applicant applicant)
+        {
+            if (command.PhotoFileDto == null)
+            {
+                return;
+            }
+
+            await _mediator.Send(new UpdateApplicantPhotoCommand(command.Entity.Id, command.PhotoFileDto!, applicant));
         }
     }
 }

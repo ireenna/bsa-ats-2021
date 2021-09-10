@@ -12,12 +12,15 @@ namespace Application.Applicants.Profiles
         public ApplicantProfile()
         {
             CreateMap<ApplicantDto, Applicant>();
+
             CreateMap<Applicant, ApplicantDto>()
                 .ForMember(dest => dest.CvFileInfos, opt =>
-                    opt.MapFrom(src => src.CvFileInfos != null ? src.CvFileInfos.ToArray() : null));
+                    opt.MapFrom(src => src.CvFileInfos != null ? src.CvFileInfos.ToArray() : null))
+                .ForMember(dto => dto.PhotoLink, opt => opt.MapFrom(a => a.PhotoFileInfo.PublicUrl));
+
             CreateMap<Applicant, GetShortApplicantDto>();
             CreateMap<Applicant, ApplicantCsvGetDto>();
-            
+
             CreateMap<Applicant, MarkedApplicantDto>()
                 .ForMember(dto => dto.IsApplied, opt => opt.Ignore());
 

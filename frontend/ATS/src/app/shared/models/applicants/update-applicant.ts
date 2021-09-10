@@ -9,9 +9,12 @@ export interface UpdateApplicant {
   linkedInUrl: string;
   experience: number;
   experienceDescription?: string;
+  creationDate: Date;
   skills?: string;
   hasCv: boolean;
   cvs: File[] | null;
+  hasPhoto: boolean;
+  photo: string | File | null;
 
   tags: ElasticEntity;
 }

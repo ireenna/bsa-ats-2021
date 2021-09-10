@@ -34,6 +34,7 @@ export class ApplicantControlComponent implements OnDestroy {
   @Input() public applicant: ViewableApplicant | undefined = undefined;
   @Output() public deleteApplicantEvent = new EventEmitter<string>();
   @Output() public updateApplicantEvent = new EventEmitter<ViewableApplicant>();
+  @Output() public reloadApplicantsEvent = new EventEmitter();
   @Output() public markAsFollowed = new EventEmitter<string>();
 
   public loading: boolean = false;
@@ -60,7 +61,7 @@ export class ApplicantControlComponent implements OnDestroy {
 
   public showApplicantUpdateDialog(): void {
     const dialogRef = this.dialog.open(UpdateApplicantComponent, {
-      width: '480px',
+      width: '600px',
       height: '95vh',
       autoFocus: false,
       data: this.applicant,
@@ -139,13 +140,15 @@ export class ApplicantControlComponent implements OnDestroy {
 
   public openVacancyAddModal(): void {
     this.dialog.open(AddCandidateModalComponent, {
-      width: '400px',
+      width: '500px',
       autoFocus: false,
       panelClass: 'applicants-options',
       data: {
         applicantId: this.applicant!.id,
       },
-    });
+    })
+      .afterClosed()
+      .subscribe(_ => this.reloadApplicantsEvent.emit());
   }
 
   public openCvListDialog(): void {

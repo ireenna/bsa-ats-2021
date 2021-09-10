@@ -12,6 +12,7 @@ using Infrastructure.Repositories.Abstractions;
 using System;
 using Application.Common.Exceptions.Applicants;
 using Application.Interfaces;
+using Domain.Enums;
 
 namespace Infrastructure.Repositories.Read
 {
@@ -27,19 +28,38 @@ namespace Infrastructure.Repositories.Read
         public async Task<IEnumerable<FileInfo>> GetCvFileInfosAsync(string applicantId)
         {
             SqlConnection connection = _connectionFactory.GetSqlConnection();
+            await connection.OpenAsync();
 
-            var query = @"SELECT fi.* FROM FileInfos fi WHERE fi.ApplicantId = @applicantId;";
-
+            var query = @"SELECT fi.* FROM FileInfos fi WHERE fi.ApplicantId = @applicantId";
             var fileInfos = await connection.QueryAsync<FileInfo>(query, param: new { applicantId });
+            await connection.CloseAsync();
 
             if (fileInfos == null)
             {
                 throw new ApplicantCvNotFoundException(applicantId);
             }
 
+            return fileInfos;
+        }
+
+        public async Task<FileInfo> GetPhotoFileInfoAsync(string applicantId)
+        {
+            SqlConnection connection = _connectionFactory.GetSqlConnection();
+            await connection.OpenAsync();
+
+            var query = @"SELECT fi.* FROM Applicants a
+                          INNER JOIN FileInfos fi ON a.PhotoFileInfoId = fi.Id
+                          WHERE a.Id = @applicantId";
+
+            var fileInfo = await connection.QueryFirstOrDefaultAsync<FileInfo>(query, new { applicantId = applicantId });
             await connection.CloseAsync();
 
-            return fileInfos;
+            if (fileInfo == null)
+            {
+                throw new ApplicantPhotoNotFoundException(applicantId);
+            }
+
+            return fileInfo;
         }
 
         public async Task<IEnumerable<Applicant>> GetCompanyApplicants()
@@ -49,8 +69,9 @@ namespace Infrastructure.Repositories.Read
             SqlConnection connection = _connectionFactory.GetSqlConnection();
 
             string sql = @$"SELECT a.*, fi.* FROM {_tableName} a
-                           LEFT JOIN FileInfos fi ON a.Id = fi.ApplicantId
-                           WHERE a.CompanyId = @companyId";
+                LEFT JOIN FileInfos fi ON a.Id = fi.ApplicantId
+                WHERE a.CompanyId = @companyId
+                ORDER BY a.CreationDate DESC";
 
             await connection.OpenAsync();
 
@@ -92,7 +113,8 @@ namespace Infrastructure.Repositories.Read
                          "JOIN Projects ON Vacancies.ProjectId = Projects.Id " +
                          "JOIN CandidateToStages ON CandidateToStages.StageId = Stages.Id " +
                          "JOIN VacancyCandidates ON CandidateToStages.CandidateId = VacancyCandidates.Id " +
-                         $"WHERE VacancyCandidates.ApplicantId = @applicantId";
+                         "WHERE VacancyCandidates.ApplicantId = @applicantId " +
+                         "AND NOT EXISTS (SELECT * FROM ArchivedEntities AS AV WHERE AV.EntityType = @entityVacancyType AND AV.EntityId = Vacancies.Id);";
 
             await connection.OpenAsync();
 
@@ -107,7 +129,7 @@ namespace Infrastructure.Repositories.Read
                             Project = p.Name,
                         };
                     },
-                    new { applicantId = @applicantId },
+                    new { applicantId = @applicantId, entityVacancyType = EntityType.Vacancy },
                     splitOn: "Id,Id,StageId,Id"
                 );
 
@@ -119,22 +141,20 @@ namespace Infrastructure.Repositories.Read
         public async Task<Applicant> GetByIdAsync(string applicantId)
         {
             SqlConnection connection = _connectionFactory.GetSqlConnection();
-            
-            string sql = @$"SELECT a.*, fi.* FROM {_tableName} a
+
+            string sql = @$"SELECT a.*, fi.*, pfi.* FROM {_tableName} a
                             LEFT JOIN FileInfos fi ON a.Id = fi.ApplicantId
+                            LEFT JOIN FileInfos pfi ON a.PhotoFileInfoId = pfi.Id
                             WHERE a.Id = @applicantId";
 
             await connection.OpenAsync();
-
-            var entities = await connection.QueryAsync<Applicant, FileInfo, Applicant>(sql,
-            (a, fi) =>
+            var entities = await connection.QueryAsync<Applicant, FileInfo, FileInfo, Applicant>(sql,
+            (a, fi, pfi) =>
             {
-                if (fi != null)
-                {
-                    a.CvFileInfos = a.CvFileInfos == null
+                a.CvFileInfos = a.CvFileInfos == null
                         ? new List<FileInfo>().Append(fi).ToList()
                         : a.CvFileInfos.Append(fi).ToList();
-                }
+                a.PhotoFileInfo = pfi;
                 return a;
             },
             splitOn: "Id,Id",
@@ -165,7 +185,8 @@ namespace Infrastructure.Repositories.Read
                            LEFT OUTER JOIN CandidateToStages ON CandidateToStages.StageId = Stages.Id AND (Stages.[Index]=0 OR Stages.[Index]=1)
                            LEFT OUTER JOIN VacancyCandidates ON CandidateToStages.CandidateId = VacancyCandidates.Id
                            WHERE Stages.VacancyId = @vacancyId) AS Applied ON AllApplicants.Id=Applied.ApplicantId
-                           WHERE AllApplicants.CompanyId = @companyId";
+                           WHERE AllApplicants.CompanyId = @companyId
+                           order by AllApplicants.firstName, AllApplicants.lastName";
 
             var result = await connection.QueryAsync<Applicant, bool, (Applicant, bool)>(sql,
                 (applicant, isApplied) =>

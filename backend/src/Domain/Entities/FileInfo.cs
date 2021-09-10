@@ -1,4 +1,5 @@
 using Domain.Common;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities
 {
@@ -9,6 +10,7 @@ namespace Domain.Entities
         public string PublicUrl { get; set; }
         public string ApplicantId { get; set; }
 
+        [ForeignKey("ApplicantId")]
         public Applicant Applicant { get; set; }
         public VacancyCandidate VacancyCandidate { get; set; }
     }
