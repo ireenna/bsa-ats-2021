@@ -16,10 +16,10 @@
     </mat-form-field>
     <mat-form-field>
         <mat-select [(value)]="data.selected" multiple [compareWith]="compareById" (selectionChange)="onUserChange($event)" #select>    
-            <mat-option *ngFor="let user of applicants" [value]="user">{{user.firstName}} {{user.lastName}} (
-                <div class='tags-container'>
-                    <mat-list-item class='tags' tags *ngFor="let item of user.tags.tagDtos">{{item.tagName}}</mat-list-item>
-                </div>)
+            <mat-option *ngFor="let user of applicants" [value]="user">{{user.firstName}} {{user.lastName}} 
+                <div class='tags-container' *ngIf="user.tags">
+                    (-<mat-list-item class='tags' *ngFor="let item of user.tags.tagDtos">{{item.tagName}}</mat-list-item>)
+                </div>
             </mat-option>
         </mat-select>
     </mat-form-field>
